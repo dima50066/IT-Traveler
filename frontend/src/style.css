@@ -1,15 +1,4 @@
 @import 'tailwindcss';
 
 @layer utilities {
-  .bg-primary {
-    background-color: #f3743d;
-  }
-
-  .text-primary {
-    color: #f3743d;
-  }
-
-  .border-primary {
-    border-color: #f3743d;
-  }
 }
