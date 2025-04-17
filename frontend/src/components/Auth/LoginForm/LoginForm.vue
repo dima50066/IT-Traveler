@@ -10,13 +10,6 @@ const userData = reactive({
   password: ''
 })
 
-watch(
-  userData,
-  () => {
-    console.log('user data changed')
-  },
-  { immediate: true }
-)
 </script>
 
 <template>
