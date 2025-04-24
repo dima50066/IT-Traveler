@@ -24,3 +24,6 @@ dist-ssr
 *.sw?
 
 .vscode
+
+# map api token
+/src/map/token.js
