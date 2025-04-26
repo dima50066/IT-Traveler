@@ -17,7 +17,7 @@ const emit = defineEmits(['place-clicked'])
 </script>
 
 <template>
-  <div class="px-6">
+  <div class="px-6 text-black">
     <div class="text-gray mb-4">Додані маркери</div>
 
     <slot name="label"></slot>
