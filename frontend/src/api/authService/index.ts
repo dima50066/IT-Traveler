@@ -1,4 +1,5 @@
 import { clientFetch } from '../clientFetch';
+import { router } from '../../router';
 import {
   LoginRequest,
   LoginResponse,
@@ -12,8 +13,20 @@ export const TOKEN_KEY = 'token';
 class AuthService {
   private token: string | null = null;
 
+  constructor() {
+    const savedToken = localStorage.getItem(TOKEN_KEY);
+    if (savedToken) {
+      this.token = savedToken;
+      clientFetch.defaults.headers.common['Authorization'] = `Bearer ${savedToken}`;
+    }
+  }
+
   isLoggedIn(): boolean {
     return Boolean(this.token);
+  }
+
+  getToken(): string | null {
+    return this.token;
   }
 
   setToken(token: string): void {
@@ -43,10 +56,42 @@ class AuthService {
     this.clearToken();
   }
 
-  async refresh(): Promise<UserRefreshTokensResponse> {
+  async refresh(): Promise<void> {
     const { data } = await clientFetch.get<UserRefreshTokensResponse>('/user/refresh');
-    return data;
+    this.setToken(data.accessToken);
   }
 }
 
 export const authService = new AuthService();
+
+clientFetch.interceptors.request.use((request) => {
+  const token = authService.getToken();
+
+  if (token) {
+    request.headers = request.headers || {};
+    request.headers['Authorization'] = `Bearer ${token}`;
+  }
+
+  return request;
+});
+
+clientFetch.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    const errorCode = error.response?.status;
+
+    if (errorCode === 401) {
+      try {
+        await authService.refresh();
+        error.config.headers['Authorization'] = `Bearer ${authService.getToken()}`;
+        return clientFetch.request(error.config);
+      } catch (e) {
+        authService.clearToken();
+        router.push('/auth/login');
+        return Promise.reject(e);
+      }
+    }
+
+    return Promise.reject(error);
+  }
+);

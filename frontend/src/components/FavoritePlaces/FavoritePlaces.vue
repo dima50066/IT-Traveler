@@ -22,6 +22,7 @@ const emit = defineEmits(['place-clicked'])
 
     <slot name="label"></slot>
     <slot name="list">
+      <div v-if="items.length === 0">Список порожній</div>
       <FavoritePlace v-for="place in props.items" :key="place.id" :title="place.title" :description="place.description"
         :img="place.img" :is-active="place.id === props.activeId" @click="emit('place-clicked', place.id)" />
     </slot>
