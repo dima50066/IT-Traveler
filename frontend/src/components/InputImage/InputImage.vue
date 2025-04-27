@@ -2,11 +2,13 @@
 import { ref } from 'vue'
 import UploadIcon from './UploadIcon.vue'
 
-const emit = defineEmits(['uploaded'])
+const emit = defineEmits(['update'])
 const errorMessage = ref('')
 
 const handleUploadImg = (event) => {
   const file = event.target.files[0]
+
+  if (!file) return
 
   if (file.size > 3 * 1024 * 1024) {
     errorMessage.value = 'Завеликий файл'
@@ -15,12 +17,12 @@ const handleUploadImg = (event) => {
 
   const fileReader = new FileReader()
 
-  fileReader.readAsDataURL(file)
-
   fileReader.onload = () => {
     errorMessage.value = ''
-    emit('uploaded', fileReader.result)
+    emit('update', fileReader.result)
   }
+
+  fileReader.readAsDataURL(file)
 }
 </script>
 
@@ -30,7 +32,9 @@ const handleUploadImg = (event) => {
       <input type="file" accept="image/*" class="hidden" @change="handleUploadImg" />
       <span class="flex gap-1 items-center">
         <UploadIcon />
-        <span class="underline text-xs"><slot></slot></span>
+        <span class="underline text-xs">
+          <slot></slot>
+        </span>
       </span>
     </label>
     <div v-if="errorMessage" class="text-red-500">{{ errorMessage }}</div>
