@@ -15,7 +15,11 @@ const map = ref(null)
 const mapMarkerLngLat = ref(null)
 const { isOpen, closeModal, openModal } = useModal()
 
-const { data, mutation: getPlaces } = useMutation({
+const {
+  data,
+  mutation: getPlaces,
+  isLoading: isPlacesLoading
+} = useMutation({
   mutationFn: () => getFavoritePlaces()
 })
 
@@ -67,18 +71,42 @@ onMounted(() => {
 <template>
   <main class="flex h-screen">
     <div class="bg-white h-full w-[400px] shrink-0 overflow-auto pb-10">
-      <FavoritePlaces :items="favoritePlaces" :active-id="activeId" @place-clicked="changePlace" @create="openModal" />
-      <CreateNewPlaceModal :is-open="isOpen" :is-loading="isAddingPlace" :has-error="error" @close="closeModal"
-        @submit="handleAddPlace" />
+      <div v-if="isPlacesLoading" class="text-black px-6">Loading...</div>
+      <FavoritePlaces
+        :items="favoritePlaces"
+        :active-id="activeId"
+        :is-places-loading="isPlacesLoading"
+        @place-clicked="changePlace"
+        @create="openModal"
+        @updated="getPlaces"
+      />
+      <CreateNewPlaceModal
+        :is-open="isOpen"
+        :is-loading="isAddingPlace"
+        :has-error="error"
+        @close="closeModal"
+        @submit="handleAddPlace"
+      />
     </div>
     <div class="w-full h-full flex items-center justify-center text-6xl">
-      <MapboxMap class="w-full h-full" :center="[30.523333, 50.450001]" :zoom="10" :access-token="mapSettings.apiToken"
-        :map-style="mapSettings.style" @mb-click="handleMapClick" @mb-created="(mapInstance) => (map = mapInstance)">
+      <MapboxMap
+        class="w-full h-full"
+        :center="[30.523333, 50.450001]"
+        :zoom="10"
+        :access-token="mapSettings.apiToken"
+        :map-style="mapSettings.style"
+        @mb-click="handleMapClick"
+        @mb-created="(mapInstance) => (map = mapInstance)"
+      >
         <MapboxMarker v-if="mapMarkerLngLat" :lngLat="mapMarkerLngLat" anchor="bottom">
-          <MarkerIcon class="h-8 w-8" :is-active="true" />
+          <MarkerIcon class="h-8 w-8" is-active />
         </MapboxMarker>
-
-        <MapboxMarker v-for="place in favoritePlaces" :key="place.id" :lngLat="place.coordinates" anchor="bottom">
+        <MapboxMarker
+          v-for="place in favoritePlaces"
+          :key="place.id"
+          :lngLat="place.coordinates"
+          anchor="bottom"
+        >
           <button @click.stop="changeActiveId(place.id)">
             <MarkerIcon class="h-8 w-8" />
           </button>
