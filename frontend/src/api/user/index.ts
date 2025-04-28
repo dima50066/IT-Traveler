@@ -4,7 +4,8 @@ import {
   LoginResponse,
   RegistrationRequest,
   RegistrationResponse,
-  UserRefreshTokensResponse
+  UserRefreshTokensResponse,
+  UserInfo
 } from '../../types';
 
 export const login = (body: LoginRequest): Promise<LoginResponse> => {
@@ -21,4 +22,8 @@ export const logout = (): Promise<void> => {
 
 export const refresh = (): Promise<UserRefreshTokensResponse> => {
   return clientFetch.get('/user/refresh');
+};
+
+export const getUserInfo = (): Promise<UserInfo> => {
+  return clientFetch.get('/user/me');
 };
