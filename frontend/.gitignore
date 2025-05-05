@@ -27,3 +27,5 @@ dist-ssr
 
 # map api token
 /src/map/token.js
+
+.env

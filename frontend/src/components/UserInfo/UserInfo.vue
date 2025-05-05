@@ -1,30 +1,12 @@
 <script setup>
-import { onMounted } from 'vue'
-import UserIcon from './UserIcon.vue'
-import { useMutation } from '../../composables/useMutation'
-import { getUserInfo } from '../../api/user'
+import { useAuth0 } from '@auth0/auth0-vue';
 
-const {
-  data: userInfo,
-  mutation: getUser,
-  isLoading
-} = useMutation({
-  mutationFn: () => getUserInfo()
-})
-
-onMounted(() => {
-  getUser()
-})
+const { user, isLoading } = useAuth0();
 </script>
 
 <template>
-  <div
-    class="flex sticky top-0 items-center text-black gap-3 bg-[#ffe6dc] border-solid border-b-2 border-[#f3743d] rounded-bl-2xl rounded-br-2xl px-6 py-4 mb-10"
-  >
-    <div class="w-10 h-10 flex items-center justify-center rounded-full color-[#f3743d] bg-[#f3743d]">
-      <UserIcon class="text-white" />
-    </div>
+  <div class="flex items-center gap-3">
     <span v-if="isLoading">Loading...</span>
-    <span v-if="userInfo">{{ userInfo.data.name }}</span>
+    <span v-else>{{ user?.name }}</span>
   </div>
 </template>

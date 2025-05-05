@@ -1,20 +1,17 @@
 <script setup>
-import { RouterView, RouterLink } from 'vue-router'
+import Auth0LoginButton from '../components/Auth/Auth0LoginButton.vue'
 import BaseLayout from '../layouts/BaseLayout.vue'
+
 </script>
 
 <template>
   <BaseLayout>
-    <section class="w-full bg-white p-10 rounded-2xl">
-      <div class="flex justify-center gap-10 mb-10">
-        <router-link to="registration" class="text-[#939393]" exact-active-class="text-[#f3743d]">
-          Створити аккаунт
-        </router-link>
-        <router-link to="login" class="text-[#939393]" exact-active-class="text-[#f3743d]">
-          Увійти
-        </router-link>
-      </div>
-      <router-view></router-view>
+    <section class="w-full bg-white p-10 rounded-2xl text-center">
+      <h2 class="text-2xl font-bold mb-6">Авторизація</h2>
+      <p class="text-[#939393] mb-10">
+        Натисни кнопку нижче, щоб увійти через Google
+      </p>
+      <Auth0LoginButton />
     </section>
   </BaseLayout>
 </template>

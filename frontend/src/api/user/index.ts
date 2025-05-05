@@ -1,29 +1,28 @@
 import { clientFetch } from '../clientFetch';
-import {
-  LoginRequest,
-  LoginResponse,
-  RegistrationRequest,
-  RegistrationResponse,
-  UserRefreshTokensResponse,
-  UserInfo
-} from '../../types';
+import { useAuth0 } from '@auth0/auth0-vue';
 
-export const login = (body: LoginRequest): Promise<LoginResponse> => {
-  return clientFetch.post('/user/login', body);
+export const fetchOrCreateUser = async () => {
+  const { getAccessTokenSilently } = useAuth0();
+  const token = await getAccessTokenSilently();
+
+  const { data } = await clientFetch.get('/auth/callback', {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  });
+
+  return data.user;
 };
 
-export const registerUser = (body: RegistrationRequest): Promise<RegistrationResponse> => {
-  return clientFetch.post('/user/register', body);
-};
+export const fetchUserProfile = async () => {
+  const { getAccessTokenSilently } = useAuth0();
+  const token = await getAccessTokenSilently();
 
-export const logout = (): Promise<void> => {
-  return clientFetch.get('/user/logout');
-};
+  const { data } = await clientFetch.get('/auth/profile', {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  });
 
-export const refresh = (): Promise<UserRefreshTokensResponse> => {
-  return clientFetch.get('/user/refresh');
-};
-
-export const getUserInfo = (): Promise<UserInfo> => {
-  return clientFetch.get('/user/me');
+  return data.user;
 };

@@ -1,25 +1,20 @@
 <script setup>
-import { logout } from '../../api/user'
-import LogoutIcon from './LogoutIcon.vue'
-import { useMutation } from '../../composables/useMutation'
-import { useRouter } from 'vue-router'
-import { authService } from '../../api/authService'
+import { useAuth0 } from '@auth0/auth0-vue';
+import { useAuthStore } from '../../stores/auth';
+import LogoutIcon from './LogoutIcon.vue';
 
-const router = useRouter()
+const { logout } = useAuth0();
+const authStore = useAuthStore();
 
-const { mutation: logoutUser, isLoading } = useMutation({
-  mutationFn: () => logout(),
-  onSuccess: () => {
-    authService.clearToken()
-    router.replace('/auth/login')
-  }
-})
+const handleLogout = () => {
+  authStore.clear();
+  logout({ logoutParams: { returnTo: window.location.origin } });
+};
 </script>
 
 <template>
-  <button class="flex gap-2 items-center px-6 text-black" @click="logoutUser">
-    <span v-if="isLoading">Loading...</span>
-    <span v-else>Вихід</span>
+  <button class="flex gap-2 items-center px-6 text-black" @click="handleLogout">
+    <span>Вихід</span>
     <LogoutIcon />
   </button>
 </template>
