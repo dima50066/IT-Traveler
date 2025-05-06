@@ -1,10 +1,10 @@
 <script setup>
-import { computed, reactive } from 'vue'
-import IButton from '../IButton/IButton.vue'
-import IInput from '../IInput/IInput.vue'
-import IModal from '../IModal/IModal.vue'
-import InputImage from '../InputImage/InputImage.vue'
-import MarkerIcon from '../icons/MarkerIcon.vue'
+import { computed, reactive } from 'vue';
+import IButton from '../IButton/IButton.vue';
+import IInput from '../IInput/IInput.vue';
+import IModal from '../IModal/IModal.vue';
+// import InputImage from '../InputImage/InputImage.vue';
+import MarkerIcon from '../icons/MarkerIcon.vue';
 
 const props = defineProps({
   isOpen: {
@@ -19,27 +19,29 @@ const props = defineProps({
     default: false,
     type: Boolean
   }
-})
+});
 
-const emit = defineEmits(['close', 'submit'])
+const emit = defineEmits(['close', 'submit']);
+
 const formData = reactive({
   title: '',
   description: '',
-  img: ''
-})
-const uploadText = computed(() => {
-  return formData.img ? 'Натисніть тут, щоб змінити фото' : 'Натисніть тут, щоб додати фото'
-})
+  // img: '' // 
+});
 
-const handleUpload = (url) => {
-  formData.img = url
-}
+// const uploadText = computed(() => {
+//   return formData.img ? 'Натисніть тут, щоб змінити фото' : 'Натисніть тут, щоб додати фото';
+// });
+
+// const handleUpload = (url) => {
+//   formData.img = url;
+// };
 
 const resetForm = () => {
-  formData.description = ''
-  formData.img = ''
-  formData.title = ''
-}
+  formData.description = '';
+  // formData.img = '';
+  formData.title = '';
+};
 </script>
 
 <template>
@@ -48,12 +50,16 @@ const resetForm = () => {
       <div class="flex gap-1 justify-center font-bold text-center mb-10">
         <MarkerIcon /> Додати маркер
       </div>
+
       <IInput label="Локація" class="mb-4" v-model="formData.title" />
-      <IInput label="Опис" type="textarea" class="mb-2" v-model="formData.description" />
+      <IInput label="Опис" type="textarea" class="mb-10" v-model="formData.description" />
+
+      <!--
       <div class="flex gap-2 items-center mb-10">
         <img v-if="formData.img" :src="formData.img" alt="avatar" class="w-8 h-8 object-cover" />
         <InputImage @uploaded="handleUpload">{{ uploadText }}</InputImage>
       </div>
+      -->
 
       <IButton class="w-full" variant="gradient" :is-loading="props.isLoading">Додати</IButton>
       <div v-if="props.hasError" class="text-red-500">Щось пішло не так</div>

@@ -16,13 +16,16 @@ const pointSchema = new Schema(
       type: String,
       trim: true,
     },
-    lat: {
-      type: Number,
-      required: true,
+    img: {
+      type: String,
     },
-    lng: {
-      type: Number,
+    coordinates: {
+      type: [Number],
       required: true,
+      validate: {
+        validator: (arr: number[]) => arr.length === 2,
+        message: "Coordinates must be a [number, number] array",
+      },
     },
   },
   { timestamps: true }

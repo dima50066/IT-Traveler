@@ -10,8 +10,8 @@ export const getPoints = async (req: Request, res: Response) => {
 export const createPoint = async (req: Request, res: Response) => {
   const userId = req.auth?.sub!;
   const data = { ...req.body, userId };
-  await pointService.createPoint(data);
-  res.json({ message: "Point created successfully" });
+  const created = await pointService.createPoint(data);
+  res.json(created);
 };
 
 export const updatePoint = async (req: Request, res: Response) => {
