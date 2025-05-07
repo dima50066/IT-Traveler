@@ -4,6 +4,7 @@ import {
   createPoint,
   updatePoint,
   deletePoint,
+  searchPlaces,
 } from "../controllers/points";
 import { validateBody } from "../middlewares/validateBody";
 import { createPointSchema, updatePointSchema } from "../validation/point";
@@ -29,5 +30,7 @@ router.put(
   ctrlWrapper(updatePoint)
 );
 router.delete("/:id", ctrlWrapper(deletePoint));
+
+router.get("/search", ctrlWrapper(searchPlaces));
 
 export default router;

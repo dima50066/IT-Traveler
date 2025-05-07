@@ -34,3 +34,11 @@ export const updateFavoritePlace = (body: UpdatePointRequest & { id: string }): 
 export const deleteFavoritePlace = (id: string): Promise<void> => {
   return clientFetch.delete(`${BASE_PLACES_URL}/${id}`);
 };
+
+export const searchPlaces = (
+  query: string
+): Promise<{ name: string; location: { lat: number; lng: number } }[]> => {
+  return clientFetch
+    .get(`/points/search?query=${encodeURIComponent(query)}`)
+    .then((res) => res.data);
+};

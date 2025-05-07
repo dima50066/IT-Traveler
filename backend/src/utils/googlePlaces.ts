@@ -1,4 +1,3 @@
-// utils/googlePlaces.ts
 import { env } from "./env";
 
 const GOOGLE_API_KEY = env("GOOGLE_API_KEY");

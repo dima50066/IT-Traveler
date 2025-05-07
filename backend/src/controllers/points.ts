@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import * as pointService from "../services/points";
 import { saveFileToCloudinary } from "../utils/cloudinary";
 import { getPlacePhotoByCoordinates } from "../utils/googlePlaces";
+import { searchPlacesByText } from "../services/points";
 
 export const getPoints = async (req: Request, res: Response) => {
   const userId = req.auth?.sub!;
@@ -83,4 +84,20 @@ export const deletePoint = async (req: Request, res: Response) => {
     return res.status(404).json({ message: "Point not found" });
   }
   res.json({ message: "Point deleted successfully" });
+};
+
+export const searchPlaces = async (req: Request, res: Response) => {
+  const query = req.query.query as string;
+
+  if (!query || query.trim().length === 0) {
+    return res.status(400).json({ message: "Missing search query." });
+  }
+
+  try {
+    const results = await searchPlacesByText(query);
+    res.json(results);
+  } catch (err) {
+    console.error("[Places] Search failed:", err);
+    res.status(500).json({ message: "Failed to search places." });
+  }
 };
