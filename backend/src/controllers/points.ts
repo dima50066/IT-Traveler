@@ -1,5 +1,7 @@
 import { Request, Response } from "express";
 import * as pointService from "../services/points";
+import { saveFileToCloudinary } from "../utils/cloudinary";
+import { getPlacePhotoByCoordinates } from "../utils/googlePlaces";
 
 export const getPoints = async (req: Request, res: Response) => {
   const userId = req.auth?.sub!;
@@ -9,7 +11,29 @@ export const getPoints = async (req: Request, res: Response) => {
 
 export const createPoint = async (req: Request, res: Response) => {
   const userId = req.auth?.sub!;
-  const data = { ...req.body, userId };
+  const { title, description, coordinates } = req.body;
+
+  let imageUrl: string | undefined;
+
+  if (req.file) {
+    const uploadResult = await saveFileToCloudinary(
+      req.file.path,
+      "IT-Traveler"
+    );
+    imageUrl = uploadResult.secure_url;
+  } else if (coordinates?.length === 2) {
+    const [lng, lat] = coordinates;
+    imageUrl = await getPlacePhotoByCoordinates(lat, lng);
+  }
+
+  const data = {
+    title,
+    description,
+    coordinates,
+    img: imageUrl,
+    userId,
+  };
+
   const created = await pointService.createPoint(data);
   res.json(created);
 };

@@ -17,7 +17,7 @@ interface CloudinaryUploadResult {
 
 export const saveFileToCloudinary = async (
   filePath: string,
-  folder: string = "HAKY-Manager"
+  folder: string = "IT-Traveler"
 ): Promise<CloudinaryUploadResult> => {
   try {
     const result = await cloudinary.v2.uploader.upload(path.resolve(filePath), {
@@ -53,7 +53,7 @@ export const deleteFileFromCloudinary = async (
 
 const getPublicIdFromUrl = (url: string): string | null => {
   const matches = url.match(/\/([^\/]+)\.(pdf|jpg|png|jpeg|gif|svg|docx|txt)$/);
-  return matches ? `HAKY-Manager/${matches[1]}` : null;
+  return matches ? `IT-Traveler/${matches[1]}` : null;
 };
 
 const removeTempFile = (filePath: string) => {

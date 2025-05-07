@@ -1,24 +1,15 @@
-<script setup>
-import { computed, reactive } from 'vue';
+<script setup lang="ts">
+import { reactive, ref } from 'vue';
 import IButton from '../IButton/IButton.vue';
 import IInput from '../IInput/IInput.vue';
 import IModal from '../IModal/IModal.vue';
-// import InputImage from '../InputImage/InputImage.vue';
+import InputImage from '../InputImage/InputImage.vue';
 import MarkerIcon from '../icons/MarkerIcon.vue';
 
 const props = defineProps({
-  isOpen: {
-    default: false,
-    type: Boolean
-  },
-  isLoading: {
-    default: false,
-    type: Boolean
-  },
-  hasError: {
-    default: false,
-    type: Boolean
-  }
+  isOpen: { type: Boolean, default: false },
+  isLoading: { type: Boolean, default: false },
+  hasError: { type: Boolean, default: false }
 });
 
 const emit = defineEmits(['close', 'submit']);
@@ -26,21 +17,17 @@ const emit = defineEmits(['close', 'submit']);
 const formData = reactive({
   title: '',
   description: '',
-  // img: '' // 
+  file: null as File | null
 });
 
-// const uploadText = computed(() => {
-//   return formData.img ? 'Натисніть тут, щоб змінити фото' : 'Натисніть тут, щоб додати фото';
-// });
-
-// const handleUpload = (url) => {
-//   formData.img = url;
-// };
-
 const resetForm = () => {
-  formData.description = '';
-  // formData.img = '';
   formData.title = '';
+  formData.description = '';
+  formData.file = null;
+};
+
+const handleUpload = (file: File) => {
+  formData.file = file;
 };
 </script>
 
@@ -54,12 +41,7 @@ const resetForm = () => {
       <IInput label="Локація" class="mb-4" v-model="formData.title" />
       <IInput label="Опис" type="textarea" class="mb-10" v-model="formData.description" />
 
-      <!--
-      <div class="flex gap-2 items-center mb-10">
-        <img v-if="formData.img" :src="formData.img" alt="avatar" class="w-8 h-8 object-cover" />
-        <InputImage @uploaded="handleUpload">{{ uploadText }}</InputImage>
-      </div>
-      -->
+      <InputImage @uploaded="handleUpload">Натисніть тут, щоб додати фото</InputImage>
 
       <IButton class="w-full" variant="gradient" :is-loading="props.isLoading">Додати</IButton>
       <div v-if="props.hasError" class="text-red-500">Щось пішло не так</div>

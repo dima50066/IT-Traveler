@@ -48,8 +48,8 @@ export type GetAllPointsResponse = Point[];
 export interface AddPointRequest {
   title: string;
   description: string;
-  img: string;
   coordinates: [number, number];
+  file?: File;
 }
 
 export interface UpdatePointRequest {

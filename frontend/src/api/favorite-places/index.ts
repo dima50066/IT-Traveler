@@ -12,8 +12,18 @@ export const getFavoritePlaces = (): Promise<Point[]> => {
   );
 };
 
-export const addFavoritePlace = (body: AddPointRequest): Promise<Point> => {
-  return clientFetch.post<Point>(BASE_PLACES_URL, body).then(({ data }) => data);
+export const addFavoritePlace = (body: AddPointRequest & { file?: File }): Promise<Point> => {
+  const formData = new FormData();
+  formData.append('title', body.title);
+  formData.append('description', body.description);
+  formData.append('coordinates[0]', body.coordinates[0].toString());
+  formData.append('coordinates[1]', body.coordinates[1].toString());
+
+  if (body.file) {
+    formData.append('image', body.file);
+  }
+
+  return clientFetch.post<Point>(BASE_PLACES_URL, formData).then(({ data }) => data);
 };
 
 export const updateFavoritePlace = (body: UpdatePointRequest & { id: string }): Promise<Point> => {

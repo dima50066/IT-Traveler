@@ -1,29 +1,25 @@
-<script setup>
-import { ref } from 'vue'
-import UploadIcon from './UploadIcon.vue'
+<script setup lang="ts">
+import { ref } from 'vue';
+import UploadIcon from './UploadIcon.vue';
 
-const emit = defineEmits(['update'])
-const errorMessage = ref('')
+const emit = defineEmits(['uploaded']);
 
-const handleUploadImg = (event) => {
-  const file = event.target.files[0]
+const errorMessage = ref('');
 
-  if (!file) return
+const handleUploadImg = (event: Event) => {
+  const target = event.target as HTMLInputElement;
+  const file = target.files?.[0];
+
+  if (!file) return;
 
   if (file.size > 3 * 1024 * 1024) {
-    errorMessage.value = 'Завеликий файл'
-    return
+    errorMessage.value = 'Завеликий файл';
+    return;
   }
 
-  const fileReader = new FileReader()
-
-  fileReader.onload = () => {
-    errorMessage.value = ''
-    emit('update', fileReader.result)
-  }
-
-  fileReader.readAsDataURL(file)
-}
+  errorMessage.value = '';
+  emit('uploaded', file);
+};
 </script>
 
 <template>

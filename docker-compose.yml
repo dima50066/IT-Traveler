@@ -15,11 +15,15 @@ services:
     command: npm run dev
 
   frontend:
-    build: ./frontend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
     container_name: it-traveler-frontend
     ports:
       - "5173:5173"
     volumes:
       - ./frontend:/app
       - /app/node_modules
-    command: npm run dev -- --host
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+    command: npm run dev
