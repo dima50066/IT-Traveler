@@ -23,7 +23,7 @@ export const createPoint = async (req: Request, res: Response) => {
     imageUrl = uploadResult.secure_url;
   } else if (coordinates?.length === 2) {
     const [lng, lat] = coordinates;
-    imageUrl = await getPlacePhotoByCoordinates(lat, lng);
+    imageUrl = await getPlacePhotoByCoordinates(lat, lng, description);
   }
 
   const data = {
@@ -41,10 +41,37 @@ export const createPoint = async (req: Request, res: Response) => {
 export const updatePoint = async (req: Request, res: Response) => {
   const userId = req.auth?.sub!;
   const { id } = req.params;
-  const updated = await pointService.updateUserPointById(userId, id, req.body);
+  const { title, description, coordinates } = req.body;
+
+  let updatedData: any = {
+    title,
+    description,
+    coordinates,
+  };
+
+  if (req.file) {
+    const uploadResult = await saveFileToCloudinary(
+      req.file.path,
+      "IT-Traveler"
+    );
+    updatedData.img = uploadResult.secure_url;
+  } else if (coordinates?.length === 2) {
+    const [lng, lat] = coordinates;
+    const newImage = await getPlacePhotoByCoordinates(lat, lng, description);
+    if (newImage) {
+      updatedData.img = newImage;
+    }
+  }
+
+  const updated = await pointService.updateUserPointById(
+    userId,
+    id,
+    updatedData
+  );
   if (!updated) {
     return res.status(404).json({ message: "Point not found" });
   }
+
   res.json({ message: "Point updated successfully" });
 };
 

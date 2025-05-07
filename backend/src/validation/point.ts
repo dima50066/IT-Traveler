@@ -10,4 +10,5 @@ export const updatePointSchema = Joi.object({
   title: Joi.string(),
   description: Joi.string().allow("", null),
   coordinates: Joi.array().items(Joi.number()).length(2),
+  img: Joi.string().uri().optional(),
 });
