@@ -7,11 +7,14 @@ services:
       - "3000:3000"
     environment:
       - NODE_ENV=development
+      - REDIS_URL=redis://redis:6379
     env_file:
       - ./backend/.env
     volumes:
       - ./backend:/app
       - /app/node_modules
+    depends_on:
+      - redis    
     command: npm run dev
 
   frontend:
@@ -27,3 +30,10 @@ services:
     environment:
       - CHOKIDAR_USEPOLLING=true
     command: npm run dev
+
+  redis:
+    image: redis:latest
+    container_name: it-traveler-redis
+    ports:
+      - "6379:6379"
+    restart: always

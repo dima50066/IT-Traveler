@@ -2,11 +2,10 @@
 import EditPlaceModal from '../EditPlaceModal/EditPlaceModal.vue'
 import FavoritePlace from '../FavoritePlace/FavoritePlace.vue'
 import IButton from '../IButton/IButton.vue'
+import ConfirmationModal from '../ConfirmationModal/ConfirmationModal.vue'
 import { useModal } from '../../composables/useModal'
 import { computed, ref } from 'vue'
-import { useMutation } from '../../composables/useMutation'
-import { deleteFavoritePlace, updateFavoritePlace } from '../../api/favorite-places'
-import ConfirmationModal from '../ConfirmationModal/ConfirmationModal.vue'
+import { usePointsStore } from '../../stores/points'
 
 const props = defineProps({
   items: {
@@ -23,7 +22,9 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['place-clicked', 'create', 'updated'])
+const emit = defineEmits(['place-clicked', 'create'])
+
+const store = usePointsStore()
 
 const idOfDeletedItem = ref(null)
 const { isOpen: isEditOpen, openModal: openEditModal, closeModal: closeEditModal } = useModal()
@@ -32,35 +33,29 @@ const {
   openModal: openConfirmationModal,
   closeModal: closeConfirmationModal
 } = useModal()
-const { mutation: updatePlace, isLoading } = useMutation({
-  mutationFn: (formData) => updateFavoritePlace(formData),
-  onSuccess: () => {
-    closeEditModal()
-    emit('updated')
-  }
-})
-const {
-  mutation: deletePlace,
-  isLoading: isDeleting,
-  error: deleteError
-} = useMutation({
-  mutationFn: (id) => deleteFavoritePlace(id),
-  onSuccess: () => {
-    closeConfirmationModal()
-    idOfDeletedItem.value = null
-    emit('updated')
-  }
-})
+
 const selectedId = ref(null)
 const selectedItem = computed(() => props.items.find((place) => place.id === selectedId.value))
+
+const isDeleting = ref(false)
+const isUpdating = ref(false)
+const deleteError = ref(null)
 
 const handleEditPlace = (id) => {
   selectedId.value = id
   openEditModal()
 }
 
-const handleSubmit = (formData) => {
-  updatePlace(formData)
+const handleSubmit = async (formData) => {
+  isUpdating.value = true
+  try {
+    await store.updatePoint(formData)
+    closeEditModal()
+  } catch (e) {
+    console.error('❌ Error updating point:', e)
+  } finally {
+    isUpdating.value = false
+  }
 }
 
 const handleOpenConfirmationModal = (id) => {
@@ -68,8 +63,17 @@ const handleOpenConfirmationModal = (id) => {
   openConfirmationModal()
 }
 
-const handleDeletePlace = () => {
-  deletePlace(idOfDeletedItem.value)
+const handleDeletePlace = async () => {
+  isDeleting.value = true
+  try {
+    await store.deletePoint(idOfDeletedItem.value)
+    closeConfirmationModal()
+    idOfDeletedItem.value = null
+  } catch (e) {
+    deleteError.value = e
+  } finally {
+    isDeleting.value = false
+  }
 }
 </script>
 
@@ -80,6 +84,7 @@ const handleDeletePlace = () => {
     <slot name="label"></slot>
     <slot name="list">
       <div v-if="items.length === 0 && !isPlacesLoading">Список порожній</div>
+
       <FavoritePlace
         v-for="place in props.items"
         :key="place.id"
@@ -95,7 +100,7 @@ const handleDeletePlace = () => {
       <EditPlaceModal
         :is-open="isEditOpen"
         :place="selectedItem"
-        :is-loading="isLoading"
+        :is-loading="isUpdating"
         @close="closeEditModal"
         @submit="handleSubmit"
       />
@@ -103,7 +108,7 @@ const handleDeletePlace = () => {
       <ConfirmationModal
         :is-open="isConfirmationModalOpen"
         :is-loading="isDeleting"
-        :has-error="deleteError"
+        :has-error="!!deleteError"
         @cancel="closeConfirmationModal"
         @confirm="handleDeletePlace"
         title="Ви дійсно хочете видалити улюблене місце?"

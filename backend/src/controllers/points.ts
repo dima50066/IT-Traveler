@@ -3,6 +3,7 @@ import * as pointService from "../services/points";
 import { saveFileToCloudinary } from "../utils/cloudinary";
 import { getPlacePhotoByCoordinates } from "../utils/googlePlaces";
 import { searchPlacesByText } from "../services/points";
+import redisClient from "../utils/redis";
 
 export const getPoints = async (req: Request, res: Response) => {
   const userId = req.auth?.sub!;
@@ -36,6 +37,8 @@ export const createPoint = async (req: Request, res: Response) => {
   };
 
   const created = await pointService.createPoint(data);
+  await redisClient.del(`points:${userId}`);
+
   res.json(created);
 };
 
@@ -69,6 +72,8 @@ export const updatePoint = async (req: Request, res: Response) => {
     id,
     updatedData
   );
+  await redisClient.del(`points:${userId}`);
+
   if (!updated) {
     return res.status(404).json({ message: "Point not found" });
   }
@@ -80,6 +85,11 @@ export const deletePoint = async (req: Request, res: Response) => {
   const userId = req.auth?.sub!;
   const { id } = req.params;
   const deleted = await pointService.deleteUserPointById(userId, id);
+  try {
+    await redisClient.del(`points:${userId}`);
+  } catch (err) {
+    console.warn(`[Redis] Failed to delete cache for user ${userId}`, err);
+  }
   if (!deleted) {
     return res.status(404).json({ message: "Point not found" });
   }

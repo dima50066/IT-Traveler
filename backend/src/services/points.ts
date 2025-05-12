@@ -1,9 +1,20 @@
 import { Point } from "../db/models/Point";
 import { env } from "../utils/env";
+import redisClient from "../utils/redis";
 
 const GOOGLE_API_KEY = env("GOOGLE_API_KEY");
 
-export const getPointsByUser = (userId: string) => Point.find({ userId });
+export const getPointsByUser = async (userId: string) => {
+  const cacheKey = `points:${userId}`;
+  const cached = await redisClient.get(cacheKey);
+  if (cached) {
+    return JSON.parse(cached);
+  }
+
+  const points = await Point.find({ userId });
+  await redisClient.set(cacheKey, JSON.stringify(points), { EX: 3600 });
+  return points;
+};
 
 export const createPoint = (data: any) => Point.create(data);
 
@@ -14,6 +25,12 @@ export const deleteUserPointById = (userId: string, id: string) =>
   Point.findOneAndDelete({ _id: id, userId });
 
 export const searchPlacesByText = async (query: string) => {
+  const hashKey = "places:search";
+  const field = query.toLowerCase().trim();
+
+  const cached = await redisClient.hGet(hashKey, field);
+  if (cached) return JSON.parse(cached);
+
   const url = `https://maps.googleapis.com/maps/api/place/findplacefromtext/json?input=${encodeURIComponent(
     query
   )}&inputtype=textquery&fields=name,geometry&key=${GOOGLE_API_KEY}`;
@@ -25,10 +42,14 @@ export const searchPlacesByText = async (query: string) => {
 
   const data = await response.json();
 
-  return (
+  const result =
     data.candidates?.map((candidate: any) => ({
       name: candidate.name,
       location: candidate.geometry?.location,
-    })) || []
-  );
+    })) || [];
+
+  await redisClient.hSet(hashKey, field, JSON.stringify(result));
+  await redisClient.expire(hashKey, 86400);
+
+  return result;
 };
