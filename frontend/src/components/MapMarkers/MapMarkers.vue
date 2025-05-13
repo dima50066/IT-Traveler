@@ -1,6 +1,6 @@
 <script setup>
 import { MapboxMap, MapboxMarker } from '@studiometa/vue-mapbox-gl';
-import MarkerIcon from '../icons/MarkerIcon.vue';
+import MarkerIcon from '../../shared/icons/MarkerIcon.vue';
 import { mapSettings } from '../../map/settings';
 import { computed, onMounted } from 'vue';
 import { usePointsStore } from '../../stores/points';

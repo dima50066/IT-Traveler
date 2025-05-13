@@ -1,10 +1,10 @@
 <script setup>
 import { ref, watch } from 'vue'
-import IButton from '../IButton/IButton.vue'
-import IInput from '../IInput/IInput.vue'
-import IModal from '../IModal/IModal.vue'
-import InputImage from '../InputImage/InputImage.vue'
-import MarkerIcon from '../icons/MarkerIcon.vue'
+import IButton from '../../shared/IButton/IButton.vue'
+import IInput from '../../shared/IInput/IInput.vue'
+import IModal from '../../shared/IModal/IModal.vue'
+import InputImage from '../../shared/InputImage/InputImage.vue'
+import MarkerIcon from '../../shared/icons/MarkerIcon.vue'
 import fallbackImage from '../../assets/img/ukraine.png'
 
 const props = defineProps({

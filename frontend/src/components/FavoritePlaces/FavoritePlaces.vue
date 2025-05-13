@@ -1,8 +1,8 @@
 <script setup>
 import EditPlaceModal from '../EditPlaceModal/EditPlaceModal.vue'
 import FavoritePlace from '../FavoritePlace/FavoritePlace.vue'
-import IButton from '../IButton/IButton.vue'
-import ConfirmationModal from '../ConfirmationModal/ConfirmationModal.vue'
+import IButton from '../../shared/IButton/IButton.vue'
+import ConfirmationModal from '../../shared/ConfirmationModal/ConfirmationModal.vue'
 import { useModal } from '../../composables/useModal'
 import { computed, ref } from 'vue'
 import { usePointsStore } from '../../stores/points'
