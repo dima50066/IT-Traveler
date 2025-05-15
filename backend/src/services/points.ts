@@ -4,14 +4,17 @@ import redisClient from "../utils/redis";
 
 const GOOGLE_API_KEY = env("GOOGLE_API_KEY");
 
-export const getPointsByUser = async (userId: string) => {
-  const cacheKey = `points:${userId}`;
+export const getPointsByUser = async (userId: string, status?: string) => {
+  const cacheKey = status ? `points:${userId}:${status}` : `points:${userId}`;
   const cached = await redisClient.get(cacheKey);
   if (cached) {
     return JSON.parse(cached);
   }
 
-  const points = await Point.find({ userId });
+  const query: any = { userId };
+  if (status) query.status = status;
+
+  const points = await Point.find(query);
   await redisClient.set(cacheKey, JSON.stringify(points), { EX: 3600 });
   return points;
 };

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useAuth0 } from '@auth0/auth0-vue';
-import IButton from '../IButton/IButton.vue';
+import IButton from '../../shared/IButton/IButton.vue';
 
 const { loginWithRedirect, isLoading } = useAuth0();
 

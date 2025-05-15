@@ -27,6 +27,11 @@ const pointSchema = new Schema(
         message: "Coordinates must be a [number, number] array",
       },
     },
+    status: {
+      type: String,
+      enum: ["wishlist", "visited"],
+      default: "wishlist",
+    },
   },
   { timestamps: true }
 );

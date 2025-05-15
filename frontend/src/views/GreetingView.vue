@@ -1,5 +1,5 @@
 <script setup>
-import IButton from '../components/IButton/IButton.vue'
+import IButton from '../shared/IButton/IButton.vue'
 import BaseLayout from '../layouts/BaseLayout.vue'
 </script>
 

@@ -35,7 +35,7 @@ export const initUser = async () => {
 
   if (isAuthenticated.value && !authStore.user && !isLoading.value) {
     try {
-      const user = await fetchUserProfile();
+      const user = await fetchOrCreateUser();
       authStore.setUser(user);
     } catch (e) {
       console.error('❌ Failed to fetch user on mount:', e);

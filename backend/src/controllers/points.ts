@@ -7,7 +7,8 @@ import redisClient from "../utils/redis";
 
 export const getPoints = async (req: Request, res: Response) => {
   const userId = req.auth?.sub!;
-  const points = await pointService.getPointsByUser(userId);
+  const status = req.query.status as string | undefined;
+  const points = await pointService.getPointsByUser(userId, status);
   res.json(points);
 };
 
