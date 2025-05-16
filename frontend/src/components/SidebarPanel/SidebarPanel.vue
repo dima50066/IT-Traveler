@@ -1,8 +1,6 @@
 <script setup>
 import { computed, onMounted, ref } from 'vue';
 import FavoritePlaces from '../FavoritePlaces/FavoritePlaces.vue';
-import UserInfo from '../UserInfo/UserInfo.vue';
-import LogoutButton from '../../shared/LogoutButton/LogoutButton.vue';
 import CreateNewPlaceModal from '../CreateNewPlaceModal/CreateNewPlaceModal.vue';
 import { useModal } from '../../composables/useModal';
 import { usePointsStore } from '../../stores/points';
@@ -50,15 +48,11 @@ onMounted(() => pointsStore.fetchPoints());
 
 <template>
   <div class="relative bg-white h-full w-[400px] shrink-0 overflow-auto pb-10 shadow-lg">
-    <UserInfo />
-
     <div class="p-4">
       <div v-if="isPlacesLoading" class="text-gray-500 mb-4">Loading places...</div>
 
       <FavoritePlaces :items="favoritePlaces" :active-id="props.activeId" :is-places-loading="isPlacesLoading"
         @place-clicked="changePlace" @create="openModal" @updated="pointsStore.fetchPoints" />
-
-      <LogoutButton class="mt-10 w-full" />
 
       <CreateNewPlaceModal :is-open="isOpen" :is-loading="isAddingPlace" :has-error="!!error" @close="closeModal"
         @submit="handleAddPlace" />

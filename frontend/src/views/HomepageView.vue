@@ -6,6 +6,7 @@ import MapMarkers from '../components/MapMarkers/MapMarkers.vue';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { usePointsStore } from '../stores/points';
 // import ChatView from '../components/Chat/ChatView.vue';
+import UserDropdown from '../components/UserDropdown/UserDropdown.vue';
 
 const activeId = ref(null);
 const map = ref(null);
@@ -47,6 +48,9 @@ onMounted(() => pointsStore.fetchPoints());
           mapMarkerLngLat = lngLat;
           isNewPlace = true;
         }" @get-map="(mapInstance) => (map = mapInstance)" />
+
+      <UserDropdown />
+
     </div>
   </main>
 </template>

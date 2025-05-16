@@ -26,7 +26,7 @@ const emit = defineEmits(['edit', 'delete'])
 <template>
   <section class="text-[#939393] mb-6 last:mb-0">
     <div class="flex gap-4">
-      <img class="w-[76px] h-[76px] shrink-0" :src="props.img" alt="" />
+      <img :src="props.img" referrerpolicy="no-referrer" class="w-[76px] h-[76px] object-cover" alt="place" />
       <div class="w-full">
         <div class="flex justify-between items-center mb-2">
           <h2 class="font-bold text-sm text-[#2C2C2C]">{{ props.title }}</h2>
@@ -34,7 +34,7 @@ const emit = defineEmits(['edit', 'delete'])
             <FavoritePlaceIconButton @click="emit('edit')">
               <EditIcon />
             </FavoritePlaceIconButton>
-            <FavoritePlaceIconButton  @click.stop="emit('delete')">
+            <FavoritePlaceIconButton @click.stop="emit('delete')">
               <DeleteIcon />
             </FavoritePlaceIconButton>
           </div>
