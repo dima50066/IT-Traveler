@@ -6,14 +6,14 @@ import { searchPlacesByText } from "../services/points";
 import redisClient from "../utils/redis";
 
 export const getPoints = async (req: Request, res: Response) => {
-  const userId = req.auth?.sub!;
+  const userId = req.user?.id!;
   const status = req.query.status as string | undefined;
   const points = await pointService.getPointsByUser(userId, status);
   res.json(points);
 };
 
 export const createPoint = async (req: Request, res: Response) => {
-  const userId = req.auth?.sub!;
+  const userId = req.user?.id!;
   const { title, description, coordinates } = req.body;
 
   let imageUrl: string | undefined;
@@ -44,7 +44,7 @@ export const createPoint = async (req: Request, res: Response) => {
 };
 
 export const updatePoint = async (req: Request, res: Response) => {
-  const userId = req.auth?.sub!;
+  const userId = req.user?.id!;
   const { id } = req.params;
   const { title, description, coordinates } = req.body;
 
@@ -83,7 +83,7 @@ export const updatePoint = async (req: Request, res: Response) => {
 };
 
 export const deletePoint = async (req: Request, res: Response) => {
-  const userId = req.auth?.sub!;
+  const userId = req.user?.id!;
   const { id } = req.params;
   const deleted = await pointService.deleteUserPointById(userId, id);
   try {

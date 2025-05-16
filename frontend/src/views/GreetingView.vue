@@ -1,6 +1,13 @@
 <script setup>
-import IButton from '../shared/IButton/IButton.vue'
-import BaseLayout from '../layouts/BaseLayout.vue'
+import { useRouter } from 'vue-router';
+import IButton from '../shared/IButton/IButton.vue';
+import BaseLayout from '../layouts/BaseLayout.vue';
+
+const router = useRouter();
+
+const goToAuth = () => {
+    router.push('/auth');
+};
 </script>
 
 <template>
@@ -12,7 +19,7 @@ import BaseLayout from '../layouts/BaseLayout.vue'
                 Простий і зручний веб додаток, який дозволить тобі відмічати твої улюблені місця, а також
                 ті, в яких би ти дуже хотів побувати. Тож не зволікай і спробуй сам.
             </p>
-            <IButton to="/auth">Почати роботу</IButton>
+            <IButton @click="goToAuth">Почати роботу</IButton>
         </div>
     </BaseLayout>
 </template>

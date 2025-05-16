@@ -9,26 +9,24 @@ const chatStore = useChatStore();
 const authStore = useAuthStore();
 const newMessage = ref('');
 
-
 const sendMessage = async () => {
     if (!newMessage.value.trim()) return;
 
     const user = authStore.user;
-    if (!user?.auth0Id) {
-        console.warn('⛔ User not ready or missing auth0Id');
+    if (!user?._id) {
+        console.warn('⛔ User not ready or missing _id');
         return;
     }
 
     const payload = {
         message: newMessage.value.trim(),
-        senderId: user.auth0Id,
-        senderName: user.name || user.nickname || user.email || "Unknown",
+        senderId: user._id,
+        senderName: user.name || user.email || "Анонім",
     };
 
     socket.emit('chat:message', payload);
     newMessage.value = '';
 };
-
 
 onMounted(async () => {
     socket.connect();
@@ -58,7 +56,6 @@ onBeforeUnmount(() => {
     socket.disconnect();
 });
 </script>
-
 
 <template>
     <div class="chat-container p-4 border rounded shadow-md h-full flex flex-col">

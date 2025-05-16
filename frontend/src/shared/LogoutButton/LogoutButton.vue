@@ -1,14 +1,14 @@
 <script setup>
-import { useAuth0 } from '@auth0/auth0-vue';
 import { useAuthStore } from '../../stores/auth';
 import LogoutIcon from './LogoutIcon.vue';
+import { useRouter } from 'vue-router';
 
-const { logout } = useAuth0();
 const authStore = useAuthStore();
+const router = useRouter();
 
 const handleLogout = () => {
   authStore.clear();
-  logout({ logoutParams: { returnTo: window.location.origin } });
+  router.push('/');
 };
 </script>
 

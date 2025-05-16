@@ -1,17 +1,13 @@
 import { clientFetch } from '../clientFetch';
-import { useAuth0 } from '@auth0/auth0-vue';
+import { useAuthStore } from '../../stores/auth';
 
 export const setupAuthInterceptor = () => {
-  const { getAccessTokenSilently, isAuthenticated } = useAuth0();
+  clientFetch.interceptors.request.use((config) => {
+    const authStore = useAuthStore();
+    const token = authStore.token || localStorage.getItem('token');
 
-  clientFetch.interceptors.request.use(async (config) => {
-    try {
-      if (isAuthenticated.value) {
-        const token = await getAccessTokenSilently();
-        config.headers.set('Authorization', `Bearer ${token}`);
-      }
-    } catch (error) {
-      console.warn('⚠️ Token not attached:', error);
+    if (token) {
+      config.headers.set('Authorization', `Bearer ${token}`);
     }
 
     return config;

@@ -12,7 +12,6 @@ import { env } from "./utils/env";
 dotenv.config();
 
 const FRONTEND_URL = env("FRONTEND_URL", "http://localhost:5173");
-const PORT = env("PORT", "5000");
 
 const pinoConfig =
   process.env.NODE_ENV !== "production"

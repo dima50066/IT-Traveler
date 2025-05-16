@@ -1,11 +1,16 @@
 import { Router } from "express";
-import { authenticate } from "../middlewares/authenticate";
-import { authCallback, getProfile } from "../controllers/auth";
+import {
+  googleAuthRedirect,
+  googleAuthCallback,
+  getGoogleProfile,
+} from "../controllers/auth";
 import { ctrlWrapper } from "../utils/ctrlWrapper";
+import { authenticate } from "../middlewares/authenticate";
 
 const router = Router();
 
-router.get("/callback", authenticate, ctrlWrapper(authCallback));
-router.get("/profile", authenticate, ctrlWrapper(getProfile));
+router.get("/", ctrlWrapper(googleAuthRedirect));
+router.get("/callback", ctrlWrapper(googleAuthCallback));
+router.get("/profile", authenticate, ctrlWrapper(getGoogleProfile));
 
 export default router;

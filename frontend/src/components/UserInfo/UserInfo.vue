@@ -1,9 +1,11 @@
-<script setup>
-import { useAuth0 } from '@auth0/auth0-vue';
+<script setup lang="ts">
+import { useAuthStore } from '../../stores/auth';
 import NotificationBellIcon from './NotificationBellIcon.vue';
 import NotificationBellActiveIcon from './NotificationBellActiveIcon.vue';
 
-const { user, isLoading } = useAuth0();
+const authStore = useAuthStore();
+const user = authStore.user;
+const isLoading = !user; 
 const hasNotifications = false;
 </script>
 
@@ -16,7 +18,6 @@ const hasNotifications = false;
         <div class="flex flex-col">
           <span class="font-semibold text-lg text-gray-800">{{ user.name }}</span>
           <span class="text-sm text-gray-500">{{ user.email }}</span>
-          <span v-if="user.nickname" class="text-xs text-gray-400">Nickname: {{ user.nickname }}</span>
         </div>
       </template>
     </div>

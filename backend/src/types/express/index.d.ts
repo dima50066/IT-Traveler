@@ -1,10 +1,9 @@
-import { AuthenticatedUser } from "./types";
-
-declare global {
-  namespace Express {
-    interface Request {
-      auth?: AuthenticatedUser;
-      file?: MulterFile;
-    }
+declare namespace Express {
+  export interface Request {
+    user?: {
+      id: string;
+      email: string;
+      name: string;
+    };
   }
 }

@@ -5,7 +5,7 @@ import SearchPanel from '../components/SearchPanel/SearchPanel.vue';
 import MapMarkers from '../components/MapMarkers/MapMarkers.vue';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { usePointsStore } from '../stores/points';
-import ChatView from '../components/Chat/ChatView.vue';
+// import ChatView from '../components/Chat/ChatView.vue';
 
 const activeId = ref(null);
 const map = ref(null);
@@ -27,10 +27,9 @@ onMounted(() => pointsStore.fetchPoints());
       }" />
 
 
-    <!-- Чат -->
-    <div class="w-[300px] h-full border-l border-gray-200 bg-white">
+    <!-- <div class="w-[300px] h-full border-l border-gray-200 bg-white">
       <ChatView />
-    </div>
+    </div> -->
 
 
     <div class="w-full h-full relative">
