@@ -9,7 +9,8 @@
     "preview": "vite preview",
     "type-check": "vue-tsc --noEmit",
     "lint": "eslint . --ext .vue,.ts,.js --fix",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "lint-format": "npm run lint && npm run format"
   },
   "dependencies": {
     "@auth0/auth0-vue": "^2.4.0",
@@ -26,7 +27,7 @@
     "@tailwindcss/vite": "^4.0.17",
     "@types/node": "^22.13.14",
     "@types/socket.io-client": "^1.4.36",
-    "@types/vue-router": "^2.0.0",
+    "@typescript-eslint/eslint-plugin": "^8.28.0",
     "@typescript-eslint/parser": "^8.28.0",
     "@vitejs/plugin-vue": "^5.2.3",
     "@vue/eslint-config-prettier": "^10.2.0",
@@ -34,9 +35,10 @@
     "autoprefixer": "^10.4.21",
     "eslint": "^9.23.0",
     "eslint-config-prettier": "^10.1.1",
+    "eslint-plugin-prettier": "^5.2.1",
     "eslint-plugin-vue": "^10.0.0",
     "postcss": "^8.5.3",
-    "prettier": "^3.5.3",
+    "prettier": "^3.3.3",
     "tailwindcss": "^4.0.17",
     "typescript": "^5.8.2",
     "vite": "^6.1.0",

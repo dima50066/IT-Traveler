@@ -1,7 +1,7 @@
 <script setup>
-import IButton from '../IButton/IButton.vue'
-import IModal from '../IModal/IModal.vue'
-import { defineEmits } from 'vue'
+import IButton from '../IButton/IButton.vue';
+import IModal from '../IModal/IModal.vue';
+import { defineEmits } from 'vue';
 
 defineProps({
   title: {
@@ -20,9 +20,9 @@ defineProps({
     type: Boolean,
     default: false
   }
-})
+});
 
-const emit = defineEmits(['cancel', 'confirm'])
+const emit = defineEmits(['cancel', 'confirm']);
 </script>
 
 <template>

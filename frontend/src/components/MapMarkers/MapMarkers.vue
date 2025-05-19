@@ -6,12 +6,6 @@ import { computed, onMounted } from 'vue';
 import { usePointsStore } from '../../stores/points';
 import 'mapbox-gl/dist/mapbox-gl.css';
 
-const props = defineProps({
-  markerPosition: Array,
-  activeId: String,
-  map: Object,
-  isNewPlace: Boolean
-});
 const emit = defineEmits(['marker-clicked', 'map-clicked', 'get-map']);
 
 const pointsStore = usePointsStore();
@@ -34,11 +28,7 @@ onMounted(() => pointsStore.fetchPoints());
     @mb-click="handleMapClick"
     @mb-created="(mapInstance) => emit('get-map', mapInstance)"
   >
-    <MapboxMarker
-      v-if="isNewPlace && markerPosition"
-      :lngLat="markerPosition"
-      anchor="bottom"
-    >
+    <MapboxMarker v-if="isNewPlace && markerPosition" :lngLat="markerPosition" anchor="bottom">
       <MarkerIcon class="h-8 w-8" is-active />
     </MapboxMarker>
     <MapboxMarker

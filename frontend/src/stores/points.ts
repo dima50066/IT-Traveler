@@ -5,7 +5,7 @@ import {
   deleteFavoritePlace,
   updateFavoritePlace
 } from '../api/favorite-places';
-import type { Point } from '../types';
+import type { Point, AddPointRequest, UpdatePointRequest } from '../types';
 
 export const usePointsStore = defineStore('points', {
   state: () => ({
@@ -23,12 +23,12 @@ export const usePointsStore = defineStore('points', {
       }
     },
 
-    async addPoint(data: any) {
+    async addPoint(data: AddPointRequest) {
       await addFavoritePlace(data);
       await this.fetchPoints();
     },
 
-    async updatePoint(data: any) {
+    async updatePoint(data: UpdatePointRequest) {
       await updateFavoritePlace(data);
       await this.fetchPoints();
     },

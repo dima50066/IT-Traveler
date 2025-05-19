@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { reactive, ref } from 'vue';
+import { reactive } from 'vue';
 import IButton from '../../shared/IButton/IButton.vue';
 import IInput from '../../shared/IInput/IInput.vue';
 import IModal from '../../shared/IModal/IModal.vue';

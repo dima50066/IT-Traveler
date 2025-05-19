@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, onUnmounted, Teleport, ref, watch } from 'vue';
+import { onMounted, onUnmounted, ref, watch } from 'vue';
 import CrossIcon from '../../shared/icons/CrossIcon.vue';
 import type { Trip, CreateTripRequest } from '../../types';
 import { useTripsStore } from '../../stores/trip';
@@ -86,12 +86,32 @@ const submit = async () => {
         </h2>
 
         <form @submit.prevent="submit" class="space-y-4">
-          <input v-model="form.title" type="text" placeholder="Назва" class="border border-gray-300 rounded px-3 py-2 w-full" required />
-          <textarea v-model="form.description" placeholder="Опис" class="border border-gray-300 rounded px-3 py-2 w-full" />
+          <input
+            v-model="form.title"
+            type="text"
+            placeholder="Назва"
+            class="border border-gray-300 rounded px-3 py-2 w-full"
+            required
+          />
+          <textarea
+            v-model="form.description"
+            placeholder="Опис"
+            class="border border-gray-300 rounded px-3 py-2 w-full"
+          />
 
           <div class="flex space-x-2">
-            <input v-model="form.startDate" type="date" class="border border-gray-300 rounded px-3 py-2 w-full" required />
-            <input v-model="form.endDate" type="date" class="border border-gray-300 rounded px-3 py-2 w-full" required />
+            <input
+              v-model="form.startDate"
+              type="date"
+              class="border border-gray-300 rounded px-3 py-2 w-full"
+              required
+            />
+            <input
+              v-model="form.endDate"
+              type="date"
+              class="border border-gray-300 rounded px-3 py-2 w-full"
+              required
+            />
           </div>
 
           <div v-if="form.budget">

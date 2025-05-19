@@ -66,8 +66,17 @@ export interface CreateTripRequest {
   };
 }
 
-export interface UpdateTripRequest extends Partial<CreateTripRequest> {}
+export type UpdateTripRequest = Partial<CreateTripRequest>;
 
 export interface InviteUserRequest {
   userId: string;
+}
+
+export interface User {
+  _id: string;
+  googleId: string;
+  email: string;
+  name: string;
+  picture: string;
+  role: string;
 }

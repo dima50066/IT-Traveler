@@ -2,7 +2,6 @@
 import { RouterView } from 'vue-router';
 import { setupAuthInterceptor } from './api/auth/interceptor';
 
-
 setupAuthInterceptor();
 </script>
 

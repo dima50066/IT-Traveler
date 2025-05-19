@@ -1,13 +1,13 @@
 import { defineStore } from 'pinia';
-
+import { User } from '../types';
 export const useAuthStore = defineStore('auth', {
   state: () => ({
-    user: null as Record<string, any> | null,
+    user: null as User | null,
     token: localStorage.getItem('token') || ''
   }),
 
   actions: {
-    setUser(userData: Record<string, any>) {
+    setUser(userData: User) {
       this.user = userData;
     },
     setToken(token: string) {
