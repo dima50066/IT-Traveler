@@ -7,6 +7,11 @@ const pointSchema = new Schema(
       required: true,
       index: true,
     },
+    tripId: {
+      type: String,
+      required: true,
+      index: true,
+    },
     title: {
       type: String,
       required: true,

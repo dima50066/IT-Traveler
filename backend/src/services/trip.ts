@@ -1,4 +1,5 @@
 import { Trip } from "../db/models/Trip";
+import { Point } from "../db/models/Point";
 
 export const createTrip = (data: any) => Trip.create(data);
 
@@ -10,8 +11,15 @@ export const getTripById = (id: string) => Trip.findById(id);
 export const updateTripById = (userId: string, id: string, data: any) =>
   Trip.findOneAndUpdate({ _id: id, userId }, data, { new: true });
 
-export const deleteTripById = (userId: string, id: string) =>
-  Trip.findOneAndDelete({ _id: id, userId });
+export const deleteTripById = async (userId: string, id: string) => {
+  const trip = await Trip.findOne({ _id: id, userId });
+
+  if (!trip) return null;
+
+  await Point.deleteMany({ tripId: trip._id });
+
+  return Trip.findByIdAndDelete(id);
+};
 
 export const inviteCollaborator = (tripId: string, userId: string) =>
   Trip.findByIdAndUpdate(
@@ -19,21 +27,3 @@ export const inviteCollaborator = (tripId: string, userId: string) =>
     { $addToSet: { collaborators: userId } },
     { new: true }
   );
-
-// export const getTripSummary = async (id: string) => {
-//   const trip = await Trip.findById(id);
-//   if (!trip) throw new Error("Trip not found");
-
-//   return {
-//     title: trip.title,
-//     durationDays: Math.ceil(
-//       (new Date(trip.endDate).getTime() - new Date(trip.startDate).getTime()) /
-//         (1000 * 60 * 60 * 24)
-//     ),
-//     totalBudget:
-//       trip.budget.transport +
-//       trip.budget.accommodation +
-//       trip.budget.food +
-//       trip.budget.other,
-//   };
-// };

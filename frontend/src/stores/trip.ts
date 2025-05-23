@@ -5,8 +5,13 @@ import type { Trip, CreateTripRequest, UpdateTripRequest, InviteUserRequest } fr
 export const useTripsStore = defineStore('trips', {
   state: () => ({
     trips: [] as Trip[],
-    loading: false
+    loading: false,
+    activeTrip: null as Trip | null
   }),
+
+  getters: {
+    activeTripId: (state) => state.activeTrip?._id ?? null
+  },
 
   actions: {
     async fetchTrips() {
@@ -16,6 +21,9 @@ export const useTripsStore = defineStore('trips', {
       } finally {
         this.loading = false;
       }
+    },
+    setActiveTrip(trip: Trip | null) {
+      this.activeTrip = trip;
     },
 
     async create(data: CreateTripRequest) {

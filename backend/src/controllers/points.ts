@@ -5,15 +5,34 @@ import { getPlacePhotoByCoordinates } from "../utils/googlePlaces";
 import { searchPlacesByText } from "../services/points";
 import redisClient from "../utils/redis";
 
-export const getPoints = async (req: Request, res: Response) => {
-  const userId = req.user?.id!;
-  const status = req.query.status as string | undefined;
-  const points = await pointService.getPointsByUser(userId, status);
-  res.json(points);
+export const listPoints = async (req: Request, res: Response) => {
+  try {
+    if (!req.trip) {
+      console.error(
+        "❌ [GET /points/list] req.trip is missing — check middleware"
+      );
+      return res
+        .status(400)
+        .json({ message: "Missing trip context from middleware" });
+    }
+
+    const tripId = req.trip._id.toString();
+    const status = req.query.status as string | undefined;
+
+    const points = await pointService.getPointsByTrip(tripId, status);
+
+    res.json(points);
+  } catch (err: any) {
+    res.status(500).json({
+      message: "Something went wrong",
+      error: err.message || err.toString(),
+    });
+  }
 };
 
 export const createPoint = async (req: Request, res: Response) => {
   const userId = req.user?.id!;
+  const tripId = req.trip!._id.toString();
   const { title, description, coordinates } = req.body;
 
   let imageUrl: string | undefined;
@@ -35,17 +54,21 @@ export const createPoint = async (req: Request, res: Response) => {
     coordinates,
     img: imageUrl,
     userId,
+    tripId,
   };
 
   const created = await pointService.createPoint(data);
-  await redisClient.del(`points:${userId}`);
-
+  await Promise.all([
+    redisClient.del(`points:${tripId}:wishlist`),
+    redisClient.del(`points:${tripId}:visited`),
+    redisClient.del(`points:${tripId}:all`),
+  ]);
   res.json(created);
 };
 
 export const updatePoint = async (req: Request, res: Response) => {
-  const userId = req.user?.id!;
   const { id } = req.params;
+  const tripId = req.trip!._id.toString();
   const { title, description, coordinates } = req.body;
 
   let updatedData: any = {
@@ -68,12 +91,12 @@ export const updatePoint = async (req: Request, res: Response) => {
     }
   }
 
-  const updated = await pointService.updateUserPointById(
-    userId,
-    id,
-    updatedData
-  );
-  await redisClient.del(`points:${userId}`);
+  const updated = await pointService.updatePointById(id, updatedData);
+  await Promise.all([
+    redisClient.del(`points:${tripId}:wishlist`),
+    redisClient.del(`points:${tripId}:visited`),
+    redisClient.del(`points:${tripId}:all`),
+  ]);
 
   if (!updated) {
     return res.status(404).json({ message: "Point not found" });
@@ -83,17 +106,24 @@ export const updatePoint = async (req: Request, res: Response) => {
 };
 
 export const deletePoint = async (req: Request, res: Response) => {
-  const userId = req.user?.id!;
   const { id } = req.params;
-  const deleted = await pointService.deleteUserPointById(userId, id);
+  const tripId = req.trip!._id.toString();
+
+  const deleted = await pointService.deletePointById(id);
   try {
-    await redisClient.del(`points:${userId}`);
+    await Promise.all([
+      redisClient.del(`points:${tripId}:wishlist`),
+      redisClient.del(`points:${tripId}:visited`),
+      redisClient.del(`points:${tripId}:all`),
+    ]);
   } catch (err) {
-    console.warn(`[Redis] Failed to delete cache for user ${userId}`, err);
+    console.warn(`[Redis] Failed to delete cache for trip ${tripId}`, err);
   }
+
   if (!deleted) {
     return res.status(404).json({ message: "Point not found" });
   }
+
   res.json({ message: "Point deleted successfully" });
 };
 

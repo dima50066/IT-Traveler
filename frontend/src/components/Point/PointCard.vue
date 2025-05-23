@@ -1,7 +1,7 @@
 <script setup>
-import FavoritePlaceIconButton from './FavoritePlaceIconButton.vue';
+import PointCardIconButton from './PointCardIconButton.vue';
 import DeleteIcon from './DeleteIcon.vue';
-import EditIcon from './EditIcon.vue';
+import EditIcon from '../Point/EditIcon.vue';
 import { defineEmits } from 'vue';
 
 const props = defineProps({
@@ -36,12 +36,12 @@ const emit = defineEmits(['edit', 'delete']);
         <div class="flex justify-between items-center mb-2">
           <h2 class="font-bold text-sm text-[#2C2C2C]">{{ props.title }}</h2>
           <div class="flex gap-2">
-            <FavoritePlaceIconButton @click="emit('edit')">
+            <PointCardIconButton @click="emit('edit')">
               <EditIcon />
-            </FavoritePlaceIconButton>
-            <FavoritePlaceIconButton @click.stop="emit('delete')">
+            </PointCardIconButton>
+            <PointCardIconButton @click.stop="emit('delete')">
               <DeleteIcon />
-            </FavoritePlaceIconButton>
+            </PointCardIconButton>
           </div>
         </div>
         <p class="text-xs line-clamp-3">

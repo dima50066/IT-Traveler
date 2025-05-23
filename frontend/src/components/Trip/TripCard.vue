@@ -9,7 +9,10 @@ defineProps<{
 </script>
 
 <template>
-  <div class="border rounded-lg p-4 shadow hover:shadow-md transition-all bg-white">
+  <div
+    class="border rounded-lg p-4 shadow hover:shadow-md transition-all bg-white cursor-pointer"
+    @click="$emit('click')"
+  >
     <div class="flex justify-between items-start">
       <div>
         <h2 class="text-xl font-semibold">{{ trip.title }}</h2>
@@ -25,10 +28,12 @@ defineProps<{
       </div>
 
       <div class="space-x-2">
-        <button @click="onEdit?.()" class="text-blue-500 hover:underline text-sm">
+        <button @click.stop="onEdit?.()" class="text-blue-500 hover:underline text-sm">
           Редагувати
         </button>
-        <button @click="onDelete?.()" class="text-red-500 hover:underline text-sm">Видалити</button>
+        <button @click.stop="onDelete?.()" class="text-red-500 hover:underline text-sm">
+          Видалити
+        </button>
       </div>
     </div>
   </div>

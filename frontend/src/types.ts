@@ -5,6 +5,7 @@ export interface Point {
   img: string;
   coordinates: [number, number];
   status: 'wishlist' | 'visited';
+  tripId: string;
 }
 
 export type GetAllPointsResponse = Point[];
@@ -14,6 +15,7 @@ export interface AddPointRequest {
   description: string;
   coordinates: [number, number];
   status?: 'wishlist' | 'visited';
+  tripId: string;
   file?: File;
 }
 
@@ -24,6 +26,7 @@ export interface UpdatePointRequest {
   img: string;
   coordinates: [number, number];
   status?: 'wishlist' | 'visited';
+  tripId: string;
 }
 
 // TRIPS
@@ -72,6 +75,7 @@ export interface InviteUserRequest {
   userId: string;
 }
 
+// USER
 export interface User {
   _id: string;
   googleId: string;

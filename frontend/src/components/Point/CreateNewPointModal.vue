@@ -7,9 +7,9 @@ import InputImage from '../../shared/InputImage/InputImage.vue';
 import MarkerIcon from '../../shared/icons/MarkerIcon.vue';
 
 const props = defineProps({
-  isOpen: { type: Boolean, default: false },
-  isLoading: { type: Boolean, default: false },
-  hasError: { type: Boolean, default: false }
+  isOpen: Boolean,
+  isLoading: Boolean,
+  hasError: Boolean
 });
 
 const emit = defineEmits(['close', 'submit']);
@@ -17,13 +17,16 @@ const emit = defineEmits(['close', 'submit']);
 const formData = reactive({
   title: '',
   description: '',
-  file: null as File | null
+  file: null as File | null,
+  coordinates: [0, 0] as [number, number],
+  status: 'wishlist' as 'wishlist' | 'visited'
 });
 
 const resetForm = () => {
   formData.title = '';
   formData.description = '';
   formData.file = null;
+  formData.status = 'wishlist';
 };
 
 const handleUpload = (file: File) => {
@@ -39,12 +42,18 @@ const handleUpload = (file: File) => {
       </div>
 
       <IInput label="Локація" class="mb-4" v-model="formData.title" />
-      <IInput label="Опис" type="textarea" class="mb-10" v-model="formData.description" />
+      <IInput label="Опис" type="textarea" class="mb-4" v-model="formData.description" />
+
+      <label class="block text-sm font-medium mb-1">Статус</label>
+      <select v-model="formData.status" class="w-full border rounded p-2 mb-4">
+        <option value="wishlist">До відвідин</option>
+        <option value="visited">Відвідане</option>
+      </select>
 
       <InputImage @uploaded="handleUpload">Натисніть тут, щоб додати фото</InputImage>
 
-      <IButton class="w-full" variant="gradient" :is-loading="props.isLoading">Додати</IButton>
-      <div v-if="props.hasError" class="text-red-500">Щось пішло не так</div>
+      <IButton class="w-full mt-4" variant="gradient" :is-loading="props.isLoading">Додати</IButton>
+      <div v-if="props.hasError" class="text-red-500 mt-2">Щось пішло не так</div>
     </form>
   </IModal>
 </template>

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref } from 'vue';
 import TripCard from './TripCard.vue';
 import TripModal from './TripModal.vue';
 import { useTripsStore } from '../../stores/trip';
@@ -18,10 +18,6 @@ const closeModal = () => {
   editTrip.value = null;
   showModal.value = false;
 };
-
-onMounted(() => {
-  store.fetchTrips();
-});
 </script>
 
 <template>
@@ -39,6 +35,7 @@ onMounted(() => {
       v-for="trip in store.trips"
       :key="trip.id"
       :trip="trip"
+      @click="$emit('trip-selected', trip)"
       :onEdit="() => openModal(trip)"
       :onDelete="() => store.remove(trip.id)"
     />

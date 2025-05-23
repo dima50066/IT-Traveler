@@ -1,48 +1,47 @@
-<script setup>
-import { ref, onMounted } from 'vue';
+<script setup lang="ts">
+import { ref } from 'vue';
 import SidebarPanel from '../components/SidebarPanel/SidebarPanel.vue';
 import SearchPanel from '../components/SearchPanel/SearchPanel.vue';
 import MapMarkers from '../components/MapMarkers/MapMarkers.vue';
-import 'mapbox-gl/dist/mapbox-gl.css';
-import { usePointsStore } from '../stores/points';
-// import ChatView from '../components/Chat/ChatView.vue';
 import UserDropdown from '../components/UserDropdown/UserDropdown.vue';
+import 'mapbox-gl/dist/mapbox-gl.css';
+import type { Map as MapboxMapInstance } from 'mapbox-gl';
 
-const activeId = ref(null);
-const map = ref(null);
-const mapMarkerLngLat = ref(null);
+const activeId = ref<string | null>(null);
+const map = ref<MapboxMapInstance | undefined>();
+const mapMarkerLngLat = ref<[number, number] | null>(null);
 const searchText = ref('');
 const isNewPlace = ref(false);
 
-const pointsStore = usePointsStore();
-onMounted(() => pointsStore.fetchPoints());
+const handleGetMap = (mapInstance: MapboxMapInstance) => {
+  map.value = mapInstance;
+};
 </script>
 
 <template>
   <main class="flex h-screen">
     <SidebarPanel
+      v-if="map !== undefined"
       :active-id="activeId"
       :map="map"
       :map-marker-lng-lat="mapMarkerLngLat"
-      @update-active="(id) => (activeId = id)"
+      @update-active="(id: string) => (activeId = id)"
       @update-marker="
-        (coords) => {
+        (coords: [number, number]) => {
           mapMarkerLngLat = coords;
-          isNewPlace = false;
+          isNewPlace = true;
         }
       "
     />
-
-    <!-- <div class="w-[300px] h-full border-l border-gray-200 bg-white">
-      <ChatView />
-    </div> -->
 
     <div class="w-full h-full relative">
       <SearchPanel
         v-model:search-text="searchText"
         @place-selected="
-          (lngLat, name) => {
-            map?.flyTo({ center: lngLat, zoom: 14 });
+          (lngLat: [number, number], name: string) => {
+            if (map) {
+              map.flyTo({ center: lngLat, zoom: 14 });
+            }
             mapMarkerLngLat = lngLat;
             searchText = name;
           }
@@ -54,19 +53,25 @@ onMounted(() => pointsStore.fetchPoints());
         :marker-position="mapMarkerLngLat"
         :active-id="activeId"
         :is-new-place="isNewPlace"
+        @cancel-new-marker="
+          () => {
+            mapMarkerLngLat = null;
+            isNewPlace = false;
+          }
+        "
         @marker-clicked="
-          (id) => {
+          (id: string) => {
             activeId = id;
             isNewPlace = false;
           }
         "
         @map-clicked="
-          (lngLat) => {
+          (lngLat: [number, number]) => {
             mapMarkerLngLat = lngLat;
             isNewPlace = true;
           }
         "
-        @get-map="(mapInstance) => (map = mapInstance)"
+        @get-map="handleGetMap"
       />
 
       <UserDropdown />

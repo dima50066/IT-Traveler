@@ -42,7 +42,12 @@ export const deleteTrip = async (req: Request, res: Response) => {
     return res.status(404).json({ message: "Trip not found" });
   }
 
-  await redisClient.del(`trips:${userId}`);
+  await Promise.all([
+    redisClient.del(`trips:${userId}`),
+    redisClient.del(`points:${id}:wishlist`),
+    redisClient.del(`points:${id}:visited`),
+    redisClient.del(`points:${id}:all`),
+  ]);
   res.json({ message: "Trip deleted successfully" });
 };
 
@@ -64,14 +69,3 @@ export const inviteUser = async (req: Request, res: Response) => {
 
   res.json({ message: "User invited successfully", trip: updatedTrip });
 };
-
-// export const getTripSummary = async (req: Request, res: Response) => {
-//   const { id } = req.params;
-
-//   try {
-//     const summary = await tripService.getTripSummary(id);
-//     res.json(summary);
-//   } catch (error) {
-//     res.status(404).json({ message: "Trip not found" });
-//   }
-// };

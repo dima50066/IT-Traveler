@@ -4,28 +4,35 @@ import redisClient from "../utils/redis";
 
 const GOOGLE_API_KEY = env("GOOGLE_API_KEY");
 
-export const getPointsByUser = async (userId: string, status?: string) => {
-  const cacheKey = status ? `points:${userId}:${status}` : `points:${userId}`;
+export const getPointsByTrip = async (tripId: string, status?: string) => {
+  const cacheKey = `points:${tripId}:${status ?? "all"}`;
+
   const cached = await redisClient.get(cacheKey);
   if (cached) {
-    return JSON.parse(cached);
+    const parsed = JSON.parse(cached);
+    if (Array.isArray(parsed) && parsed.length > 0) {
+      return parsed;
+    }
   }
 
-  const query: any = { userId };
+  const query: any = { tripId };
   if (status) query.status = status;
 
   const points = await Point.find(query);
-  await redisClient.set(cacheKey, JSON.stringify(points), { EX: 3600 });
+
+  if (points.length > 0) {
+    await redisClient.set(cacheKey, JSON.stringify(points), { EX: 3600 });
+  }
+
   return points;
 };
 
 export const createPoint = (data: any) => Point.create(data);
 
-export const updateUserPointById = (userId: string, id: string, data: any) =>
-  Point.findOneAndUpdate({ _id: id, userId }, data, { new: true });
+export const updatePointById = (id: string, data: any) =>
+  Point.findByIdAndUpdate(id, data, { new: true });
 
-export const deleteUserPointById = (userId: string, id: string) =>
-  Point.findOneAndDelete({ _id: id, userId });
+export const deletePointById = (id: string) => Point.findByIdAndDelete(id);
 
 export const searchPlacesByText = async (query: string) => {
   const hashKey = "places:search";

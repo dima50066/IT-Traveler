@@ -5,7 +5,6 @@ import {
   updateTrip,
   deleteTrip,
   inviteUser,
-  //   getTripSummary,
 } from "../controllers/trip";
 import { ctrlWrapper } from "../utils/ctrlWrapper";
 import { validateBody } from "../middlewares/validateBody";
@@ -30,6 +29,5 @@ router.patch(
   validateBody(inviteUserSchema),
   ctrlWrapper(inviteUser)
 );
-// router.get("/:id/summary", ctrlWrapper(getTripSummary));
 
 export default router;

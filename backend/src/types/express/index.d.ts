@@ -5,5 +5,6 @@ declare namespace Express {
       email: string;
       name: string;
     };
+    trip?: TripDocument;
   }
 }

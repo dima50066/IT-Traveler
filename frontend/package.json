@@ -25,6 +25,7 @@
   "devDependencies": {
     "@rushstack/eslint-patch": "^1.11.0",
     "@tailwindcss/vite": "^4.0.17",
+    "@types/mapbox-gl": "^3.4.1",
     "@types/node": "^22.13.14",
     "@types/socket.io-client": "^1.4.36",
     "@typescript-eslint/eslint-plugin": "^8.28.0",
