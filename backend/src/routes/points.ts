@@ -5,6 +5,7 @@ import {
   updatePoint,
   deletePoint,
   searchPlaces,
+  reorderPoints,
 } from "../controllers/points";
 import { validateBody } from "../middlewares/validateBody";
 import { createPointSchema, updatePointSchema } from "../validation/point";
@@ -35,5 +36,7 @@ router.put(
 router.delete("/:id", checkTripAccess, ctrlWrapper(deletePoint));
 
 router.get("/search", ctrlWrapper(searchPlaces));
+
+router.patch("/reorder/:tripId", checkTripAccess, ctrlWrapper(reorderPoints));
 
 export default router;

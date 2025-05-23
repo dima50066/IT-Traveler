@@ -1,3 +1,4 @@
+import { optional } from "joi";
 import { Schema, model } from "mongoose";
 
 const pointSchema = new Schema(
@@ -17,25 +18,64 @@ const pointSchema = new Schema(
       required: true,
       trim: true,
     },
-    description: {
+    notes: {
       type: String,
       trim: true,
+    },
+    coordinates: {
+      type: {
+        lat: { type: Number, required: true },
+        lng: { type: Number, required: true },
+      },
+      required: true,
+    },
+    dayNumber: {
+      type: Number,
+      min: 1,
+    },
+    orderIndex: {
+      type: Number,
+    },
+    transportMode: {
+      type: String,
+      enum: [
+        "car",
+        "walk",
+        "public",
+        "plane",
+        "train",
+        "bike",
+        "boat",
+        "taxi",
+        "bus",
+      ],
+    },
+    category: {
+      type: String,
+      enum: [
+        "food",
+        "history",
+        "nature",
+        "accommodation",
+        "airport",
+        "restaurant",
+        "museum",
+        "shopping",
+        "museum",
+        "station",
+      ],
+    },
+    distance: {
+      type: Number,
+    },
+    duration: {
+      type: Number,
     },
     img: {
       type: String,
     },
-    coordinates: {
-      type: [Number],
-      required: true,
-      validate: {
-        validator: (arr: number[]) => arr.length === 2,
-        message: "Coordinates must be a [number, number] array",
-      },
-    },
-    status: {
-      type: String,
-      enum: ["wishlist", "visited"],
-      default: "wishlist",
+    costFromPrevious: {
+      type: Number,
     },
   },
   { timestamps: true }
