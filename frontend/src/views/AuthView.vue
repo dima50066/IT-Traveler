@@ -2,7 +2,7 @@
 import { onMounted, ref } from 'vue';
 import BaseLayout from '../layouts/BaseLayout.vue';
 import { useAuthStore } from '../stores/auth';
-import { fetchOrCreateUser } from '../api/user';
+import { fetchOrCreateUser } from '../api/user/user';
 import { useRouter, useRoute } from 'vue-router';
 import GoogleLoginButton from '../components/Auth/Auth0LoginButton.vue';
 

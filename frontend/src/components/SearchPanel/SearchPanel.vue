@@ -1,6 +1,6 @@
 <script setup>
 import { ref, watch } from 'vue';
-import { searchPlaces as backendSearchPlaces } from '../../api/favorite-places/index.ts';
+import { searchPlaces as backendSearchPlaces } from '../../api/points/points.js';
 
 const props = defineProps({
   searchText: String

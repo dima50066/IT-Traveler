@@ -1,5 +1,5 @@
 import { useAuthStore } from '../../stores/auth';
-import { fetchOrCreateUser } from '../user/index';
+import { fetchOrCreateUser } from '../user/user';
 import { router } from '../../router';
 
 export const loginWithGoogle = () => {

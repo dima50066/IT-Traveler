@@ -1,10 +1,5 @@
 import { defineStore } from 'pinia';
-import {
-  getFavoritePlaces,
-  addFavoritePlace,
-  deleteFavoritePlace,
-  updateFavoritePlace
-} from '../api/favorite-places';
+import { getPoints, addPoints, updatePoint, deletePoint } from '../api/points/points';
 import type { Point, AddPointRequest, UpdatePointRequest } from '../types';
 
 export const usePointsStore = defineStore('points', {
@@ -17,7 +12,7 @@ export const usePointsStore = defineStore('points', {
     async fetchPoints(tripId?: string) {
       this.loading = true;
       try {
-        this.points = await getFavoritePlaces(tripId);
+        this.points = await getPoints(tripId);
       } catch (err) {
         console.error(err);
       } finally {
@@ -26,17 +21,17 @@ export const usePointsStore = defineStore('points', {
     },
 
     async addPoint(data: AddPointRequest) {
-      await addFavoritePlace(data);
+      await addPoints(data);
       await this.fetchPoints(data.tripId);
     },
 
     async updatePoint(data: UpdatePointRequest) {
-      await updateFavoritePlace(data);
+      await updatePoint(data);
       await this.fetchPoints(data.tripId);
     },
 
     async deletePoint(id: string, tripId: string) {
-      await deleteFavoritePlace(id, tripId);
+      await deletePoint(id, tripId);
       await this.fetchPoints(tripId);
     }
   }

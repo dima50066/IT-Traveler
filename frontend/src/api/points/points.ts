@@ -3,7 +3,7 @@ import { GetAllPointsResponse, AddPointRequest, UpdatePointRequest, Point } from
 
 const BASE_PLACES_URL = '/points';
 
-export const getFavoritePlaces = (tripId?: string): Promise<Point[]> => {
+export const getPoints = (tripId?: string): Promise<Point[]> => {
   const query = tripId ? `?tripId=${tripId}` : '';
   const url = `/points/list${query}`;
 
@@ -20,7 +20,7 @@ export const getFavoritePlaces = (tripId?: string): Promise<Point[]> => {
     });
 };
 
-export const addFavoritePlace = (body: AddPointRequest & { file?: File }): Promise<Point> => {
+export const addPoints = (body: AddPointRequest & { file?: File }): Promise<Point> => {
   const formData = new FormData();
   formData.append('title', body.title);
   formData.append('description', body.description);
@@ -39,7 +39,7 @@ export const addFavoritePlace = (body: AddPointRequest & { file?: File }): Promi
   return clientFetch.post<Point>(BASE_PLACES_URL, formData).then(({ data }) => data);
 };
 
-export const updateFavoritePlace = (body: UpdatePointRequest & { file?: File }): Promise<Point> => {
+export const updatePoint = (body: UpdatePointRequest & { file?: File }): Promise<Point> => {
   const formData = new FormData();
   formData.append('title', body.title);
   formData.append('description', body.description);
@@ -58,7 +58,7 @@ export const updateFavoritePlace = (body: UpdatePointRequest & { file?: File }):
   return clientFetch.put<Point>(`${BASE_PLACES_URL}/${body.id}`, formData).then(({ data }) => data);
 };
 
-export const deleteFavoritePlace = (id: string, tripId: string): Promise<void> => {
+export const deletePoint = (id: string, tripId: string): Promise<void> => {
   if (!tripId) {
     throw new Error('[deleteFavoritePlace] tripId is MISSING');
   }
