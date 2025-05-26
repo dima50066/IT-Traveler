@@ -63,6 +63,7 @@ const pointSchema = new Schema(
         "shopping",
         "museum",
         "station",
+        "other",
       ],
     },
     distance: {

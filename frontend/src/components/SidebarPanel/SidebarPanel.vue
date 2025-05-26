@@ -18,6 +18,7 @@ const props = defineProps<{
 const emit = defineEmits<{
   (e: 'update-active', id: string): void;
   (e: 'update-marker', coords: [number, number]): void;
+  (e: 'clear-trip'): void;
 }>();
 
 const tripsStore = useTripsStore();
@@ -41,6 +42,8 @@ const handleTripSelect = async (trip: Trip) => {
 
 const clearActiveTrip = () => {
   clearTrip();
+  pointsStore.clearPoints();
+  emit('clear-trip');
 };
 
 const handleCreate = async (
@@ -62,7 +65,12 @@ const handleCreate = async (
     await pointsStore.addPoint({
       ...formData,
       tripId,
-      coordinates: coords,
+      coordinates: {
+        lat: coords[1],
+        lng: coords[0]
+      },
+      dayNumber: formData.dayNumber ?? 1,
+      costFromPrevious: formData.costFromPrevious ?? 0,
       status: formData.status ?? 'wishlist'
     });
 

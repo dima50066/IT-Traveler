@@ -4,9 +4,10 @@ import PointCard from './PointCard.vue';
 import IButton from '../../shared/IButton/IButton.vue';
 import ConfirmationModal from '../../shared/ConfirmationModal/ConfirmationModal.vue';
 import { useModal } from '../../composables/useModal';
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { usePointsStore } from '../../stores/points';
 import type { Point, UpdatePointRequest } from '../../types';
+import Draggable from 'vuedraggable';
 
 const props = defineProps<{
   items: Point[];
@@ -74,47 +75,66 @@ const handleDeletePlace = async () => {
     isDeleting.value = false;
   }
 };
+
+const points = ref<Point[]>([...props.items]);
+
+watch(
+  () => props.items,
+  (newItems) => {
+    points.value = [...newItems];
+  }
+);
+
+const onReorder = async () => {
+  const ids = points.value.map((p) => p._id);
+  await store.reorderPoints(props.tripId, ids);
+};
 </script>
 
 <template>
   <div class="px-6 text-black">
     <div class="text-[#939393] mb-4">Додані маркери</div>
 
-    <slot name="label"></slot>
-    <slot name="list">
-      <div v-if="items.length === 0 && !isPlacesLoading">Список порожній</div>
+    <Draggable
+      v-model="points"
+      item-key="_id"
+      handle=".drag-handle"
+      animation="200"
+      @end="onReorder"
+    >
+      <template #item="{ element }">
+        <PointCard
+          :title="element.title"
+          :description="element.description"
+          :img="element.img"
+          :is-active="element._id === activeId"
+          :category="element.category"
+          :transport-mode="element.transportMode"
+          :day-number="element.dayNumber"
+          @click="emit('place-clicked', element._id)"
+          @edit="handleEditPlace(element._id)"
+          @delete="handleOpenConfirmationModal(element._id)"
+        />
+      </template>
+    </Draggable>
 
-      <PointCard
-        v-for="place in items"
-        :key="place._id"
-        :title="place.title"
-        :description="place.description"
-        :img="place.img"
-        :is-active="place._id === activeId"
-        @click="emit('place-clicked', place._id)"
-        @edit="handleEditPlace(place._id)"
-        @delete="handleOpenConfirmationModal(place._id)"
-      />
+    <EditPointModal
+      :is-open="isEditOpen"
+      :place="selectedItem"
+      :is-loading="isUpdating"
+      @close="closeEditModal"
+      @submit="handleSubmit"
+    />
 
-      <EditPointModal
-        :is-open="isEditOpen"
-        :place="selectedItem"
-        :is-loading="isUpdating"
-        @close="closeEditModal"
-        @submit="handleSubmit"
-      />
+    <ConfirmationModal
+      :is-open="isConfirmationModalOpen"
+      :is-loading="isDeleting"
+      :has-error="!!deleteError"
+      @cancel="closeConfirmationModal"
+      @confirm="handleDeletePlace"
+      title="Ви дійсно хочете видалити улюблене місце?"
+    />
 
-      <ConfirmationModal
-        :is-open="isConfirmationModalOpen"
-        :is-loading="isDeleting"
-        :has-error="!!deleteError"
-        @cancel="closeConfirmationModal"
-        @confirm="handleDeletePlace"
-        title="Ви дійсно хочете видалити улюблене місце?"
-      />
-    </slot>
-
-    <slot></slot>
     <IButton class="w-full mt-10" variant="gradient" @click="emit('create')">
       Додати маркер
     </IButton>

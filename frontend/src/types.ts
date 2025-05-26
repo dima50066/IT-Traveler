@@ -1,32 +1,66 @@
 export interface Point {
   _id: string;
-  title: string;
-  description: string;
-  img: string;
-  coordinates: [number, number];
-  status: 'wishlist' | 'visited';
   tripId: string;
+  userId: string;
+  coordinates: { lat: number; lng: number };
+  title: string;
+  notes?: string;
+  dayNumber?: number;
+  orderIndex?: number;
+  transportMode?:
+    | 'car'
+    | 'walk'
+    | 'public'
+    | 'plane'
+    | 'train'
+    | 'bike'
+    | 'boat'
+    | 'taxi'
+    | 'shuttle';
+  category?:
+    | 'accommodation'
+    | 'airport'
+    | 'restaurant'
+    | 'museum'
+    | 'nature'
+    | 'shopping'
+    | 'station'
+    | 'other';
+  distanceFromPrevious?: number;
+  durationFromPrevious?: number;
+  costFromPrevious?: number;
+  img?: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export type GetAllPointsResponse = Point[];
 
 export interface AddPointRequest {
   title: string;
-  description: string;
-  coordinates: [number, number];
-  status?: 'wishlist' | 'visited';
+  notes?: string;
+  coordinates: { lat: number; lng: number };
   tripId: string;
+  dayNumber?: number;
+  orderIndex?: number;
+  transportMode?: Point['transportMode'];
+  category?: Point['category'];
+  costFromPrevious?: number;
   file?: File;
 }
 
 export interface UpdatePointRequest {
   id: string;
   title: string;
-  description: string;
-  img: string;
-  coordinates: [number, number];
-  status?: 'wishlist' | 'visited';
+  notes?: string;
+  coordinates: { lat: number; lng: number };
   tripId: string;
+  dayNumber?: number;
+  orderIndex?: number;
+  transportMode?: Point['transportMode'];
+  category?: Point['category'];
+  costFromPrevious?: number;
+  file?: File;
 }
 
 // TRIPS

@@ -38,9 +38,7 @@ onMounted(() => {
       emit('cancel-new-marker');
     }
   };
-
   document.addEventListener('keydown', handleKey);
-
   onBeforeUnmount(() => {
     document.removeEventListener('keydown', handleKey);
   });
@@ -60,14 +58,18 @@ onMounted(() => {
     <MapboxMarker v-if="isNewPlace && markerPosition" :lngLat="markerPosition" anchor="bottom">
       <MarkerIcon class="h-8 w-8" is-active />
     </MapboxMarker>
+
     <MapboxMarker
       v-for="place in favoritePlaces"
       :key="place._id"
-      :lngLat="place.coordinates"
+      :lngLat="[place.coordinates.lng, place.coordinates.lat]"
       anchor="bottom"
     >
       <button @click.stop="emit('marker-clicked', place._id)">
-        <MarkerIcon class="h-8 w-8" />
+        <MarkerIcon
+          class="h-8 w-8 transition-transform duration-200"
+          :is-active="place._id === activeId"
+        />
       </button>
     </MapboxMarker>
   </MapboxMap>
