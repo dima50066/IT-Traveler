@@ -3,9 +3,12 @@ import EditPointModal from './EditPointModal.vue';
 import PointCard from './PointCard.vue';
 import IButton from '../../shared/IButton/IButton.vue';
 import ConfirmationModal from '../../shared/ConfirmationModal/ConfirmationModal.vue';
+import CollaboratorInviteModal from '../Chat/CollaboratorInviteModal.vue';
+import IModal from '../../shared/IModal/IModal.vue';
 import { useModal } from '../../composables/useModal';
 import { computed, ref, watch } from 'vue';
 import { usePointsStore } from '../../stores/points';
+import { useTripsStore } from '../../stores/trip';
 import type { Point, UpdatePointRequest } from '../../types';
 import Draggable from 'vuedraggable';
 
@@ -14,14 +17,19 @@ const props = defineProps<{
   activeId: string | null;
   isPlacesLoading: boolean;
   tripId: string;
+  isInviteModalOpen: boolean;
 }>();
 
 const emit = defineEmits<{
   (e: 'place-clicked', id: string): void;
   (e: 'create'): void;
+  (e: 'open-chat', tripId: string): void;
+  (e: 'close-invite'): void;
+  (e: 'open-invite'): void;
 }>();
 
 const store = usePointsStore();
+const tripsStore = useTripsStore();
 
 const idOfDeletedItem = ref<string | null>(null);
 const { isOpen: isEditOpen, openModal: openEditModal, closeModal: closeEditModal } = useModal();
@@ -51,7 +59,7 @@ const handleSubmit = async (formData: Omit<UpdatePointRequest, 'tripId'>) => {
     await store.updatePoint({ ...formData, tripId: props.tripId });
     closeEditModal();
   } catch (e) {
-    console.error(e);
+    return e;
   } finally {
     isUpdating.value = false;
   }
@@ -89,6 +97,12 @@ const onReorder = async () => {
   const ids = points.value.map((p) => p._id);
   await store.reorderPoints(props.tripId, ids);
 };
+
+const openTripChat = () => {
+  if (tripsStore.activeTrip?.chatId) {
+    emit('open-chat', props.tripId);
+  }
+};
 </script>
 
 <template>
@@ -105,7 +119,7 @@ const onReorder = async () => {
       <template #item="{ element }">
         <PointCard
           :title="element.title"
-          :description="element.description"
+          :description="element.notes"
           :img="element.img"
           :is-active="element._id === activeId"
           :category="element.category"
@@ -120,7 +134,7 @@ const onReorder = async () => {
 
     <EditPointModal
       :is-open="isEditOpen"
-      :place="selectedItem"
+      :place="selectedItem || undefined"
       :is-loading="isUpdating"
       @close="closeEditModal"
       @submit="handleSubmit"
@@ -135,8 +149,22 @@ const onReorder = async () => {
       title="Ви дійсно хочете видалити улюблене місце?"
     />
 
+    <IModal :is-open="props.isInviteModalOpen" @close="emit('close-invite')">
+      <CollaboratorInviteModal :trip-id="props.tripId" @close="emit('close-invite')" />
+    </IModal>
+
     <IButton class="w-full mt-10" variant="gradient" @click="emit('create')">
       Додати маркер
+    </IButton>
+    <button
+      v-if="tripsStore.activeTrip?.chatId"
+      @click="openTripChat"
+      class="mt-4 w-full bg-blue-500 text-white p-2 rounded"
+    >
+      💬 Відкрити чат тріпа
+    </button>
+    <IButton @click="emit('open-invite')" class="mt-4 w-full bg-green-500 text-white p-2 rounded">
+      👥 Додати колаборатора
     </IButton>
   </div>
 </template>

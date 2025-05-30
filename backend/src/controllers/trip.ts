@@ -1,6 +1,8 @@
 import { Request, Response } from "express";
 import * as tripService from "../services/trip";
+import { getUserById } from "../services/auth";
 import redisClient from "../utils/redis";
+import { getSocketInstance } from "../utils/socket";
 
 export const getTrips = async (req: Request, res: Response) => {
   const userId = req.user?.id!;
@@ -47,6 +49,7 @@ export const deleteTrip = async (req: Request, res: Response) => {
     redisClient.del(`points:${id}:wishlist`),
     redisClient.del(`points:${id}:visited`),
     redisClient.del(`points:${id}:all`),
+    redisClient.del(`chat:trip:${id}`),
   ]);
   res.json({ message: "Trip deleted successfully" });
 };
@@ -54,9 +57,23 @@ export const deleteTrip = async (req: Request, res: Response) => {
 export const inviteUser = async (req: Request, res: Response) => {
   const { id: tripId } = req.params;
   const { userId: collaboratorId } = req.body;
+  const ownerId = req.user?.id!;
 
   if (!collaboratorId) {
     return res.status(400).json({ message: "Missing userId to invite" });
+  }
+
+  const trip = await tripService.getTripById(tripId);
+  if (!trip) {
+    return res.status(404).json({ message: "Trip not found" });
+  }
+  if (trip.userId !== ownerId) {
+    return res.status(403).json({ message: "Only owner can invite" });
+  }
+
+  const user = await getUserById(collaboratorId);
+  if (!user) {
+    return res.status(404).json({ message: "User not found" });
   }
 
   const updatedTrip = await tripService.inviteCollaborator(
@@ -66,6 +83,12 @@ export const inviteUser = async (req: Request, res: Response) => {
   if (!updatedTrip) {
     return res.status(404).json({ message: "Trip not found" });
   }
+
+  const io = getSocketInstance();
+  io.to(collaboratorId).emit("notification", {
+    message: `You have been invited to the trip: ${updatedTrip.title}`,
+    tripId,
+  });
 
   res.json({ message: "User invited successfully", trip: updatedTrip });
 };

@@ -63,6 +63,16 @@ export interface UpdatePointRequest {
   file?: File;
 }
 
+export interface DeletePointRequest {
+  id: string;
+  tripId: string;
+}
+
+export interface UpdateTripStatusRequest {
+  tripId: string;
+  status: 'planned' | 'in_progress' | 'completed';
+}
+
 // TRIPS
 
 export interface Trip {
@@ -103,13 +113,16 @@ export interface CreateTripRequest {
   };
 }
 
-export type UpdateTripRequest = Partial<CreateTripRequest>;
+export type UpdateTripRequest = Partial<CreateTripRequest> & {
+  status?: 'planned' | 'in_progress' | 'completed';
+};
 
 export interface InviteUserRequest {
   userId: string;
 }
 
 // USER
+
 export interface User {
   _id: string;
   googleId: string;
@@ -117,4 +130,19 @@ export interface User {
   name: string;
   picture: string;
   role: string;
+}
+
+// CHAT
+
+export interface ChatMessage {
+  messageId: string;
+  tripId: string;
+  senderId: string;
+  senderName: string;
+  message: string;
+  timestamp: string;
+}
+
+export interface GroupChatMessage extends ChatMessage {
+  groupId: string;
 }

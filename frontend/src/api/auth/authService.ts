@@ -15,11 +15,11 @@ export const initUser = async () => {
       const user = await fetchOrCreateUser(token);
       authStore.setUser(user);
     } catch (e) {
-      console.error('❌ Failed to fetch user on mount:', e);
+      return e;
     }
   }
 
-  if (authStore.user && router.currentRoute.value.path === '/auth') {
+  if (authStore.isAuthenticated && router.currentRoute.value.path === '/auth') {
     router.push('/map');
   }
 };

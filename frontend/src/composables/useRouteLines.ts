@@ -67,7 +67,7 @@ export const useRouteLines = () => {
           }
         }
       } catch (err) {
-        console.warn(`[drawLines] fallback line for ${id}`, err);
+        console.error(err);
         coordinates = [
           [from.coordinates.lng, from.coordinates.lat],
           [to.coordinates.lng, to.coordinates.lat]

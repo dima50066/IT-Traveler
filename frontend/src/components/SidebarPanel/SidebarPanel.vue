@@ -8,6 +8,7 @@ import { usePointsStore } from '../../stores/points';
 import type { Trip, AddPointRequest } from '../../types';
 import { useTripLifecycle } from '../../composables/useTripLifecycle';
 import type { Map as MapboxMapInstance } from 'mapbox-gl';
+import { useModal } from '../../composables/useModal';
 
 const props = defineProps<{
   mapMarkerLngLat: [number, number] | null;
@@ -19,21 +20,28 @@ const emit = defineEmits<{
   (e: 'update-active', id: string): void;
   (e: 'update-marker', coords: [number, number]): void;
   (e: 'clear-trip'): void;
+  (e: 'open-chat', tripId: string): void;
 }>();
 
 const tripsStore = useTripsStore();
 const pointsStore = usePointsStore();
-
 const activeTrip = computed(() => tripsStore.activeTrip);
+
 const isCreateOpen = ref(false);
 const isCreateLoading = ref(false);
 const hasCreateError = ref(false);
 
+const { selectTrip, clearTrip } = useTripLifecycle();
+
+const {
+  isOpen: isInviteModalOpen,
+  openModal: openInviteModal,
+  closeModal: closeInviteModal
+} = useModal();
+
 onMounted(() => {
   tripsStore.fetchTrips();
 });
-
-const { selectTrip, clearTrip } = useTripLifecycle();
 
 const handleTripSelect = async (trip: Trip) => {
   await selectTrip(trip);
@@ -53,10 +61,7 @@ const handleCreate = async (
   const tripId = activeTrip.value?._id;
   const coords = props.mapMarkerLngLat;
 
-  if (!tripId || !coords) {
-    console.warn(tripId, coords);
-    return;
-  }
+  if (!tripId || !coords) return;
 
   isCreateLoading.value = true;
   hasCreateError.value = false;
@@ -65,20 +70,14 @@ const handleCreate = async (
     await pointsStore.addPoint({
       ...formData,
       tripId,
-      coordinates: {
-        lat: coords[1],
-        lng: coords[0]
-      },
+      coordinates: { lat: coords[1], lng: coords[0] },
       dayNumber: formData.dayNumber ?? 1,
-      costFromPrevious: formData.costFromPrevious ?? 0,
-      status: formData.status ?? 'wishlist'
+      costFromPrevious: formData.costFromPrevious ?? 0
     });
-
     resetForm();
     isCreateOpen.value = false;
   } catch (err) {
-    console.error(err);
-    hasCreateError.value = true;
+    return err;
   } finally {
     isCreateLoading.value = false;
   }
@@ -87,11 +86,13 @@ const handleCreate = async (
 const handlePlaceClicked = (id: string) => {
   const point = pointsStore.points.find((p) => p._id === id);
   if (point && props.map && point.coordinates) {
-    props.map.flyTo({ center: point.coordinates, zoom: 14 });
+    props.map.flyTo({ center: [point.coordinates.lng, point.coordinates.lat], zoom: 14 });
     emit('update-active', id);
-  } else {
-    console.warn({ id, point, map: props.map });
   }
+};
+
+const openChat = (tripId: string) => {
+  emit('open-chat', tripId);
 };
 </script>
 
@@ -108,11 +109,15 @@ const handlePlaceClicked = (id: string) => {
 
         <PointList
           :items="pointsStore.points"
-          :active-id="activeId"
+          :active-id="props.activeId"
           :trip-id="activeTrip._id"
           :is-places-loading="pointsStore.loading"
+          :is-invite-modal-open="isInviteModalOpen"
           @create="() => (isCreateOpen = true)"
           @place-clicked="handlePlaceClicked"
+          @open-chat="openChat"
+          @open-invite="openInviteModal"
+          @close-invite="closeInviteModal"
         />
       </template>
 
@@ -121,9 +126,9 @@ const handlePlaceClicked = (id: string) => {
       </template>
 
       <CreateNewPointModal
-        :is-open="isCreateOpen"
-        :is-loading="isCreateLoading"
-        :has-error="hasCreateError"
+        :isOpen="isCreateOpen"
+        :isLoading="isCreateLoading"
+        :hasError="hasCreateError"
         @close="() => (isCreateOpen = false)"
         @submit="handleCreate"
       />

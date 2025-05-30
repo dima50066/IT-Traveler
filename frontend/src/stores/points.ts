@@ -51,7 +51,7 @@ export const usePointsStore = defineStore('points', {
         await reorderPoints(tripId, newOrder);
         await this.fetchPoints(tripId);
       } catch (err) {
-        console.error('[reorderPoints] reorder failed:', err);
+        console.error(err);
       }
     },
 
@@ -61,7 +61,7 @@ export const usePointsStore = defineStore('points', {
         this.points = await getPointsByCategory(tripId, category);
         this.sortPointsByOrder();
       } catch (err) {
-        console.error('[filterByCategory] failed:', err);
+        console.error(err);
       } finally {
         this.loading = false;
       }

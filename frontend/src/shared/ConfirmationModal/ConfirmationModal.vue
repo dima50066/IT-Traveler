@@ -26,7 +26,7 @@ const emit = defineEmits(['cancel', 'confirm']);
 </script>
 
 <template>
-  <IModal v-if="isOpen" @close="emit('cancel')">
+  <IModal :is-open="isOpen" @close="emit('cancel')">
     <div class="mb-4 text-lg">{{ title }}</div>
     <div class="flex gap-3 justify-center">
       <IButton @click="emit('cancel')">Відхилити</IButton>

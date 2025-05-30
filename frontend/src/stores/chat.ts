@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
-import type { ChatMessage } from '../api/chat/chat';
+import type { ChatMessage } from '../types';
 
 export const useChatStore = defineStore('chat', () => {
   const messages = ref<ChatMessage[]>([]);

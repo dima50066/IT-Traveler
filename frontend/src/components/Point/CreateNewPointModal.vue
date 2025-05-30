@@ -6,7 +6,7 @@ import IModal from '../../shared/IModal/IModal.vue';
 import InputImage from '../../shared/InputImage/InputImage.vue';
 import MarkerIcon from '../../shared/icons/MarkerIcon.vue';
 
-const props = defineProps({
+const { isOpen, isLoading, hasError } = defineProps({
   isOpen: Boolean,
   isLoading: Boolean,
   hasError: Boolean
@@ -59,7 +59,7 @@ const handleUpload = (file: File) => {
 </script>
 
 <template>
-  <IModal v-if="props.isOpen" @close="emit('close')">
+  <IModal :is-open="isOpen" @close="emit('close')">
     <form @submit.prevent="emit('submit', formData, resetForm)" class="min-w-[420px]">
       <div class="flex gap-1 justify-center font-bold text-center mb-10">
         <MarkerIcon /> Додати маркер
@@ -104,11 +104,9 @@ const handleUpload = (file: File) => {
 
       <InputImage @uploaded="handleUpload">Натисніть тут, щоб додати фото</InputImage>
 
-      <IButton class="w-full mt-4" variant="gradient" :is-loading="props.isLoading">
-        Додати
-      </IButton>
+      <IButton class="w-full mt-4" variant="gradient" :is-loading="isLoading"> Додати </IButton>
 
-      <div v-if="props.hasError" class="text-red-500 mt-2">Щось пішло не так</div>
+      <div v-if="hasError" class="text-red-500 mt-2">Щось пішло не так</div>
     </form>
   </IModal>
 </template>

@@ -9,6 +9,10 @@ export const findOrCreateUser = async (
   name?: string,
   picture?: string
 ) => {
+  if (!googleId) {
+    throw new Error("❌ googleId is required in findOrCreateUser");
+  }
+
   const cacheKey = `user:${googleId}`;
   const cachedUser = await redisClient.get(cacheKey);
   if (cachedUser) return JSON.parse(cachedUser);
@@ -36,4 +40,15 @@ export const getUserById = async (id: string) => {
   }
 
   return user;
+};
+
+export const getAllUsers = async () => {
+  const cacheKey = "users:all";
+  const cached = await redisClient.get(cacheKey);
+  if (cached) return JSON.parse(cached);
+
+  const users = await User.find({}, "_id email name picture");
+  await redisClient.set(cacheKey, JSON.stringify(users), { EX: CACHE_TTL });
+
+  return users;
 };

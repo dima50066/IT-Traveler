@@ -1,9 +1,14 @@
 <script setup lang="ts">
-import { ref } from 'vue';
 import TripCard from './TripCard.vue';
 import TripModal from './TripModal.vue';
 import { useTripsStore } from '../../stores/trip';
 import type { Trip } from '../../types';
+import { ref } from 'vue';
+
+const emit = defineEmits<{
+  (e: 'trip-selected', trip: Trip): void;
+  (e: 'open-chat', tripId: string): void;
+}>();
 
 const store = useTripsStore();
 const showModal = ref(false);
@@ -17,6 +22,32 @@ const openModal = (trip: Trip | null = null) => {
 const closeModal = () => {
   editTrip.value = null;
   showModal.value = false;
+};
+
+const handleInvite = async (userId: string) => {
+  if (editTrip.value?._id) {
+    try {
+      await store.invite(editTrip.value._id, { userId });
+      closeModal();
+    } catch (error) {
+      return error;
+    }
+  }
+};
+
+const openTripChat = () => {
+  if (editTrip.value?.chatId) {
+    emit('open-chat', editTrip.value._id);
+  }
+};
+
+const handleDelete = async (tripId: string) => {
+  try {
+    await store.remove(tripId);
+    await store.fetchTrips();
+  } catch (error) {
+    throw error;
+  }
 };
 </script>
 
@@ -37,9 +68,15 @@ const closeModal = () => {
       :trip="trip"
       @click="$emit('trip-selected', trip)"
       :onEdit="() => openModal(trip)"
-      :onDelete="() => store.remove(trip.id)"
+      :onDelete="() => handleDelete(trip.id)"
     />
 
-    <TripModal v-if="showModal" :trip="editTrip" @close="closeModal" />
+    <TripModal
+      v-if="showModal"
+      :trip="editTrip"
+      @close="closeModal"
+      @invite="handleInvite"
+      @open-chat="openTripChat"
+    />
   </div>
 </template>

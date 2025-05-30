@@ -4,7 +4,12 @@ import CrossIcon from '../../shared/icons/CrossIcon.vue';
 import type { Trip, CreateTripRequest } from '../../types';
 import { useTripsStore } from '../../stores/trip';
 
-const emit = defineEmits(['close']);
+const emit = defineEmits<{
+  (e: 'close'): void;
+  (e: 'invite', userId: string): void;
+  (e: 'open-chat'): void;
+}>();
+
 const props = defineProps<{ trip: Trip | null }>();
 
 const store = useTripsStore();

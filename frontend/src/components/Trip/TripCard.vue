@@ -1,11 +1,41 @@
 <script setup lang="ts">
 import type { Trip } from '../../types';
+import ConfirmationModal from '../../shared/ConfirmationModal/ConfirmationModal.vue';
+import { ref } from 'vue';
 
-defineProps<{
+const { trip, onEdit, onDelete } = defineProps<{
   trip: Trip;
   onEdit?: () => void;
-  onDelete?: () => void;
+  onDelete?: () => Promise<void>;
 }>();
+
+const isModalOpen = ref(false);
+const isLoading = ref(false);
+const hasError = ref(false);
+
+const openDeleteModal = () => {
+  isModalOpen.value = true;
+};
+
+const confirmDelete = async () => {
+  isLoading.value = true;
+  hasError.value = false;
+  try {
+    if (onDelete) {
+      await onDelete();
+    }
+    isModalOpen.value = false;
+  } catch (error) {
+    return error;
+  } finally {
+    isLoading.value = false;
+  }
+};
+
+const cancelDelete = () => {
+  isModalOpen.value = false;
+  hasError.value = false;
+};
 </script>
 
 <template>
@@ -31,10 +61,19 @@ defineProps<{
         <button @click.stop="onEdit?.()" class="text-blue-500 hover:underline text-sm">
           Редагувати
         </button>
-        <button @click.stop="onDelete?.()" class="text-red-500 hover:underline text-sm">
+        <button @click.stop="openDeleteModal" class="text-red-500 hover:underline text-sm">
           Видалити
         </button>
       </div>
     </div>
+
+    <ConfirmationModal
+      :is-open="isModalOpen"
+      title="Ви впевнені, що хочете видалити цю подорож?"
+      :is-loading="isLoading"
+      :has-error="hasError"
+      @cancel="cancelDelete"
+      @confirm="confirmDelete"
+    />
   </div>
 </template>

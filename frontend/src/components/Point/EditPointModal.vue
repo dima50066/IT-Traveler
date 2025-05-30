@@ -82,7 +82,7 @@ const handleImageChange = (image: string) => {
 </script>
 
 <template>
-  <IModal v-if="props.isOpen" @close="emit('close')">
+  <IModal :is-open="isOpen" @close="emit('close')">
     <div class="w-[750px]">
       <div class="flex gap-2 items-center mb-10">
         <MarkerIcon height="18" width="18" />

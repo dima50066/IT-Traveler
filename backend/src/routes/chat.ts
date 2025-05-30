@@ -7,7 +7,7 @@ const router = express.Router();
 
 router.use(authenticate);
 
-router.post("/", ctrlWrapper(sendMessage));
-router.get("/", ctrlWrapper(getChatHistory));
+router.post("/:tripId/chat/messages", ctrlWrapper(sendMessage));
+router.get("/:tripId/chat/messages", ctrlWrapper(getChatHistory));
 
 export default router;

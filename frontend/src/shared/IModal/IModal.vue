@@ -1,7 +1,8 @@
-<script setup>
-import { onMounted, onUnmounted, Teleport } from 'vue';
+<script setup lang="ts">
+import { onMounted, onUnmounted } from 'vue';
 import CrossIcon from '../icons/CrossIcon.vue';
 
+defineProps<{ isOpen: boolean }>();
 const emit = defineEmits(['close']);
 
 onMounted(() => {
@@ -14,17 +15,18 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <component :is="Teleport" to="body">
+  <Teleport to="body">
     <div
-      class="flex w-full h-full fixed top-0 left-0 overflow-auto bg-[rgba(0,0,0,0.3)]"
+      v-if="isOpen"
+      class="flex w-full h-full fixed top-0 left-0 overflow-auto bg-[rgba(0,0,0,0.3)] z-50"
       @click.self="emit('close')"
     >
       <div class="relative bg-white min-w-[350px] m-auto text-black rounded-2xl p-10">
-        <button class="absolute right-3 top-3">
-          <CrossIcon class="w-6 h-6" @click="emit('close')" />
+        <button class="absolute right-3 top-3" @click="emit('close')">
+          <CrossIcon class="w-6 h-6" />
         </button>
         <slot></slot>
       </div>
     </div>
-  </component>
+  </Teleport>
 </template>

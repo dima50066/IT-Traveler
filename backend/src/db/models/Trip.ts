@@ -35,6 +35,7 @@ const tripSchema = new Schema(
     },
     chatId: {
       type: String,
+      unique: true,
     },
     budget: {
       transport: { type: Number, default: 0 },
