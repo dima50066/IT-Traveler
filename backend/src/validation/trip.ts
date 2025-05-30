@@ -1,5 +1,30 @@
 import Joi from "joi";
 
+const todoItemSchema = Joi.object({
+  id: Joi.string().required(),
+  text: Joi.string().trim().required(),
+  done: Joi.boolean().required(),
+  order: Joi.number().required(),
+});
+
+export const updateTodoSchema = Joi.object({
+  text: Joi.string().trim(),
+  done: Joi.boolean(),
+  order: Joi.number(),
+}).or("text", "done", "order");
+
+export const reorderSchema = Joi.object({
+  todoIds: Joi.array().items(Joi.string().required()).required(),
+});
+
+export const markAllSchema = Joi.object({
+  done: Joi.boolean().required(),
+});
+
+export const batchAddSchema = Joi.object({
+  items: Joi.array().items(Joi.string().trim().required()).min(1).required(),
+});
+
 export const createTripSchema = Joi.object({
   title: Joi.string().trim().required(),
   description: Joi.string().trim().allow("", null),
@@ -12,7 +37,7 @@ export const createTripSchema = Joi.object({
     food: Joi.number().min(0).optional(),
     other: Joi.number().min(0).optional(),
   }).optional(),
-  todoList: Joi.array().items(Joi.string()).optional(),
+  todoList: Joi.array().items(todoItemSchema).optional(),
   collaborators: Joi.array().items(Joi.string()).optional(),
 }).custom((value, helpers) => {
   if (
@@ -39,7 +64,7 @@ export const updateTripSchema = Joi.object({
     food: Joi.number().min(0),
     other: Joi.number().min(0),
   }).optional(),
-  todoList: Joi.array().items(Joi.string()),
+  todoList: Joi.array().items(todoItemSchema),
   collaborators: Joi.array().items(Joi.string()),
   userId: Joi.string(),
   chatId: Joi.string(),

@@ -92,3 +92,78 @@ export const inviteUser = async (req: Request, res: Response) => {
 
   res.json({ message: "User invited successfully", trip: updatedTrip });
 };
+
+export const addTodo = async (req: Request, res: Response) => {
+  const userId = req.user?.id!;
+  const { id: tripId } = req.params;
+  const { text } = req.body;
+  if (!text) return res.status(400).json({ message: "Missing todo text" });
+
+  const updated = await tripService.addTodoItem(tripId, userId, text);
+  if (!updated) return res.status(404).json({ message: "Trip not found" });
+
+  res.json(updated.todoList);
+};
+
+export const toggleTodo = async (req: Request, res: Response) => {
+  const userId = req.user?.id!;
+  const { id: tripId, todoId } = req.params;
+
+  const updated = await tripService.toggleTodoItem(tripId, userId, todoId);
+  if (!updated)
+    return res.status(404).json({ message: "Trip or todo not found" });
+
+  res.json(updated.todoList);
+};
+
+export const deleteTodo = async (req: Request, res: Response) => {
+  const userId = req.user?.id!;
+  const { id: tripId, todoId } = req.params;
+
+  const updated = await tripService.deleteTodoItem(tripId, userId, todoId);
+  if (!updated)
+    return res.status(404).json({ message: "Trip or todo not found" });
+
+  res.json(updated.todoList);
+};
+
+export const updateTodo = async (req: Request, res: Response) => {
+  const userId = req.user?.id!;
+  const { id: tripId, todoId } = req.params;
+  const updated = await tripService.updateTodoItem(
+    tripId,
+    userId,
+    todoId,
+    req.body
+  );
+  if (!updated)
+    return res.status(404).json({ message: "Trip or todo not found" });
+  res.json(updated.todoList);
+};
+
+export const reorderTodos = async (req: Request, res: Response) => {
+  const userId = req.user?.id!;
+  const { id: tripId } = req.params;
+  const { todoIds } = req.body;
+  const updated = await tripService.reorderTodoList(tripId, userId, todoIds);
+  if (!updated) return res.status(404).json({ message: "Trip not found" });
+  res.json(updated.todoList);
+};
+
+export const markAllTodos = async (req: Request, res: Response) => {
+  const userId = req.user?.id!;
+  const { id: tripId } = req.params;
+  const { done } = req.body;
+  const updated = await tripService.markAllTodos(tripId, userId, done);
+  if (!updated) return res.status(404).json({ message: "Trip not found" });
+  res.json(updated.todoList);
+};
+
+export const batchAddTodos = async (req: Request, res: Response) => {
+  const userId = req.user?.id!;
+  const { id: tripId } = req.params;
+  const { items } = req.body;
+  const updated = await tripService.batchAddTodos(tripId, userId, items);
+  if (!updated) return res.status(404).json({ message: "Trip not found" });
+  res.json(updated.todoList);
+};

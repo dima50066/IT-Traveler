@@ -1,3 +1,5 @@
+// POINTS
+
 export interface Point {
   _id: string;
   tripId: string;
@@ -74,6 +76,12 @@ export interface UpdateTripStatusRequest {
 }
 
 // TRIPS
+export interface TodoItem {
+  id: string;
+  text: string;
+  done: boolean;
+  order: number;
+}
 
 export interface Trip {
   _id: string;
@@ -92,7 +100,7 @@ export interface Trip {
     food: number;
     other: number;
   };
-  todoList: string[];
+  todoList: TodoItem[];
   createdAt: string;
   updatedAt: string;
 }
@@ -104,7 +112,7 @@ export interface CreateTripRequest {
   endDate: string;
   status?: 'planned' | 'in_progress' | 'completed';
   collaborators?: string[];
-  todoList?: string[];
+  todoList?: TodoItem[];
   budget?: {
     transport?: number;
     accommodation?: number;
@@ -119,6 +127,30 @@ export type UpdateTripRequest = Partial<CreateTripRequest> & {
 
 export interface InviteUserRequest {
   userId: string;
+}
+
+// TODO
+
+export interface AddTodoRequest {
+  text: string;
+}
+
+export interface UpdateTodoRequest {
+  text?: string;
+  done?: boolean;
+  order?: number;
+}
+
+export interface ReorderTodosRequest {
+  todoIds: string[];
+}
+
+export interface MarkAllTodosRequest {
+  done: boolean;
+}
+
+export interface BatchAddTodosRequest {
+  items: string[];
 }
 
 // USER

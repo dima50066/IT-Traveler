@@ -4,7 +4,13 @@ import type {
   CreateTripRequest,
   UpdateTripRequest,
   InviteUserRequest,
-  UpdateTripStatusRequest
+  UpdateTripStatusRequest,
+  AddTodoRequest,
+  UpdateTodoRequest,
+  ReorderTodosRequest,
+  MarkAllTodosRequest,
+  BatchAddTodosRequest,
+  TodoItem
 } from '../../types';
 
 const BASE_TRIPS_URL = '/trip';
@@ -50,4 +56,50 @@ export const updateTripStatus = (body: UpdateTripStatusRequest): Promise<Trip> =
       ...data,
       id: data._id
     }));
+};
+
+export const addTodoItem = (tripId: string, body: AddTodoRequest): Promise<TodoItem[]> => {
+  return clientFetch
+    .patch<TodoItem[]>(`${BASE_TRIPS_URL}/${tripId}/todo/add`, body)
+    .then((res) => res.data);
+};
+
+export const toggleTodoItem = (tripId: string, todoId: string): Promise<TodoItem[]> => {
+  return clientFetch
+    .patch<TodoItem[]>(`${BASE_TRIPS_URL}/${tripId}/todo/${todoId}/toggle`)
+    .then((res) => res.data);
+};
+
+export const deleteTodoItem = (tripId: string, todoId: string): Promise<TodoItem[]> => {
+  return clientFetch
+    .delete<TodoItem[]>(`${BASE_TRIPS_URL}/${tripId}/todo/${todoId}`)
+    .then((res) => res.data);
+};
+
+export const updateTodoItem = (
+  tripId: string,
+  todoId: string,
+  body: UpdateTodoRequest
+): Promise<TodoItem[]> => {
+  return clientFetch
+    .patch<TodoItem[]>(`${BASE_TRIPS_URL}/${tripId}/todo/${todoId}`, body)
+    .then((res) => res.data);
+};
+
+export const reorderTodoList = (tripId: string, body: ReorderTodosRequest): Promise<TodoItem[]> => {
+  return clientFetch
+    .patch<TodoItem[]>(`${BASE_TRIPS_URL}/${tripId}/todo/reorder`, body)
+    .then((res) => res.data);
+};
+
+export const markAllTodos = (tripId: string, body: MarkAllTodosRequest): Promise<TodoItem[]> => {
+  return clientFetch
+    .patch<TodoItem[]>(`${BASE_TRIPS_URL}/${tripId}/todo/mark-all`, body)
+    .then((res) => res.data);
+};
+
+export const batchAddTodos = (tripId: string, body: BatchAddTodosRequest): Promise<TodoItem[]> => {
+  return clientFetch
+    .post<TodoItem[]>(`${BASE_TRIPS_URL}/${tripId}/todo/batch`, body)
+    .then((res) => res.data);
 };

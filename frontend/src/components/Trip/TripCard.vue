@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { Trip } from '../../types';
 import ConfirmationModal from '../../shared/ConfirmationModal/ConfirmationModal.vue';
+import TripToDoModal from './ToDo/TripToDoModal.vue';
 import { ref } from 'vue';
 
 const { trip, onEdit, onDelete } = defineProps<{
@@ -12,6 +13,7 @@ const { trip, onEdit, onDelete } = defineProps<{
 const isModalOpen = ref(false);
 const isLoading = ref(false);
 const hasError = ref(false);
+const showToDoModal = ref(false);
 
 const openDeleteModal = () => {
   isModalOpen.value = true;
@@ -51,18 +53,21 @@ const cancelDelete = () => {
           📅 {{ new Date(trip.startDate).toLocaleDateString() }} –
           {{ new Date(trip.endDate).toLocaleDateString() }}
         </p>
-        <p class="text-sm">🧍 Учасники: {{ trip.collaborators.length + 1 }}</p>
+        <p class="text-sm">🧍 Учасники: {{ trip.collaborators.length }}</p>
         <p class="text-sm">
           📌 Статус: <span class="font-medium">{{ trip.status }}</span>
         </p>
       </div>
 
-      <div class="space-x-2">
+      <div class="space-y-1 text-right min-w-[120px]">
         <button @click.stop="onEdit?.()" class="text-blue-500 hover:underline text-sm">
-          Редагувати
+          ✏️ Редагувати
+        </button>
+        <button @click.stop="showToDoModal = true" class="text-green-500 hover:underline text-sm">
+          📋 Завдання
         </button>
         <button @click.stop="openDeleteModal" class="text-red-500 hover:underline text-sm">
-          Видалити
+          🗑️ Видалити
         </button>
       </div>
     </div>
@@ -74,6 +79,13 @@ const cancelDelete = () => {
       :has-error="hasError"
       @cancel="cancelDelete"
       @confirm="confirmDelete"
+    />
+
+    <TripToDoModal
+      v-if="showToDoModal"
+      :is-open="showToDoModal"
+      :trip="trip"
+      @close="showToDoModal = false"
     />
   </div>
 </template>
