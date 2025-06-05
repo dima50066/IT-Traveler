@@ -4,8 +4,8 @@ import { saveFileToCloudinary } from "../utils/cloudinary";
 import { getPlacePhotoByCoordinates } from "../utils/googlePlaces";
 import { searchPlacesByText } from "../services/points";
 import redisClient from "../utils/redis";
-import { Point } from "../db/models/Point"; // для пошуку попередньої точки
-import { getDistanceDuration } from "../services/points"; // нова функція
+import { Point } from "../db/models/Point";
+import { getDistanceDuration } from "../services/points";
 
 export const listPoints = async (req: Request, res: Response) => {
   try {
@@ -34,18 +34,13 @@ export const listPoints = async (req: Request, res: Response) => {
 export const createPoint = async (req: Request, res: Response) => {
   const userId = req.user?.id!;
   const tripId = req.trip!._id.toString();
-  const {
-    title,
-    notes,
-    coordinates,
-    dayNumber,
-    orderIndex,
-    transportMode,
-    category,
-  } = req.body;
+  const { title, notes, coordinates, dayNumber, transportMode, category } =
+    req.body;
+
+  const lastPoint = await Point.findOne({ tripId }).sort({ orderIndex: -1 });
+  const orderIndex = (lastPoint?.orderIndex ?? -1) + 1;
 
   let imageUrl: string | undefined;
-
   if (req.file) {
     const uploadResult = await saveFileToCloudinary(
       req.file.path,
@@ -62,25 +57,17 @@ export const createPoint = async (req: Request, res: Response) => {
 
   let distance: number | undefined;
   let duration: number | undefined;
-
-  // 🧠 Обчислюємо маршрут, якщо є попередня точка і транспорт
-  if (typeof orderIndex === "number" && orderIndex > 0 && transportMode) {
-    const prevPoint = await Point.findOne({
-      tripId,
-      orderIndex: orderIndex - 1,
-    });
-    if (prevPoint?.coordinates && coordinates) {
-      try {
-        const routeData = await getDistanceDuration(
-          prevPoint.coordinates,
-          coordinates,
-          transportMode
-        );
-        distance = routeData.distance;
-        duration = routeData.duration;
-      } catch (err) {
-        console.warn("❗ Failed to calculate route distance/duration:", err);
-      }
+  if (lastPoint?.coordinates && coordinates && transportMode) {
+    try {
+      const routeData = await getDistanceDuration(
+        lastPoint.coordinates,
+        coordinates,
+        transportMode
+      );
+      distance = routeData.distance;
+      duration = routeData.duration;
+    } catch (err) {
+      console.warn("❗ Failed to calculate route distance/duration:", err);
     }
   }
 
@@ -100,11 +87,13 @@ export const createPoint = async (req: Request, res: Response) => {
   };
 
   const created = await pointService.createPoint(data);
+
   await Promise.all([
     redisClient.del(`points:${tripId}:wishlist`),
     redisClient.del(`points:${tripId}:visited`),
     redisClient.del(`points:${tripId}:all`),
   ]);
+
   res.json(created);
 };
 
@@ -150,7 +139,6 @@ export const updatePoint = async (req: Request, res: Response) => {
     }
   }
 
-  // 🧠 Перерахунок distance/duration при оновленні
   if (
     typeof orderIndex === "number" &&
     orderIndex > 0 &&
@@ -255,7 +243,6 @@ export const reorderPoints = async (req: Request, res: Response) => {
       orderIndex: i,
     };
 
-    // якщо є попередня точка і mode + координати
     if (
       prevPoint &&
       point.coordinates &&
