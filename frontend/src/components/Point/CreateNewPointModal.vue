@@ -16,7 +16,7 @@ const emit = defineEmits(['close', 'submit']);
 
 const formData = reactive({
   title: '',
-  notes: '',
+  description: '',
   file: null as File | null,
   coordinates: { lat: 0, lng: 0 },
   transportMode: 'walk' as
@@ -44,7 +44,7 @@ const formData = reactive({
 
 const resetForm = () => {
   formData.title = '';
-  formData.notes = '';
+  formData.description = '';
   formData.file = null;
   formData.coordinates = { lat: 0, lng: 0 };
   formData.transportMode = 'walk';
@@ -66,7 +66,7 @@ const handleUpload = (file: File) => {
       </div>
 
       <IInput label="Локація" class="mb-4" v-model="formData.title" />
-      <IInput label="Нотатки" type="textarea" class="mb-4" v-model="formData.notes" />
+      <IInput label="Опис" type="textarea" class="mb-4" v-model="formData.description" />
 
       <IInput label="День подорожі" class="mb-4" type="number" v-model="formData.dayNumber" />
 

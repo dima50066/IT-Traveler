@@ -1,4 +1,9 @@
 // POINTS
+export interface PointNote {
+  text: string;
+  createdAt: string;
+  authorId?: string;
+}
 
 export interface Point {
   _id: string;
@@ -6,7 +11,8 @@ export interface Point {
   userId: string;
   coordinates: { lat: number; lng: number };
   title: string;
-  notes?: string;
+  description?: string;
+  notes?: PointNote[];
   dayNumber?: number;
   orderIndex?: number;
   transportMode?:
@@ -40,7 +46,7 @@ export type GetAllPointsResponse = Point[];
 
 export interface AddPointRequest {
   title: string;
-  notes?: string;
+  description?: string;
   coordinates: { lat: number; lng: number };
   tripId: string;
   dayNumber?: number;
@@ -54,7 +60,7 @@ export interface AddPointRequest {
 export interface UpdatePointRequest {
   id: string;
   title: string;
-  notes?: string;
+  description?: string;
   coordinates: { lat: number; lng: number };
   tripId: string;
   dayNumber?: number;

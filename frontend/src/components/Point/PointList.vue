@@ -5,6 +5,8 @@ import IButton from '../../shared/IButton/IButton.vue';
 import ConfirmationModal from '../../shared/ConfirmationModal/ConfirmationModal.vue';
 import CollaboratorInviteModal from '../Chat/CollaboratorInviteModal.vue';
 import IModal from '../../shared/IModal/IModal.vue';
+import PointNotesModal from './PointNotesModal.vue';
+
 import { useModal } from '../../composables/useModal';
 import { computed, ref, watch } from 'vue';
 import { usePointsStore } from '../../stores/points';
@@ -39,9 +41,20 @@ const {
   closeModal: closeConfirmationModal
 } = useModal();
 
+const {
+  isOpen: isNotesModalOpen,
+  openModal: openNotesModal,
+  closeModal: closeNotesModal
+} = useModal();
+
 const selectedId = ref<string | null>(null);
+const selectedNotesId = ref<string | null>(null);
+
 const selectedItem = computed<Point | null>(
   () => props.items.find((place) => place._id === selectedId.value) ?? null
+);
+const selectedNotesPoint = computed<Point | null>(
+  () => props.items.find((place) => place._id === selectedNotesId.value) ?? null
 );
 
 const isDeleting = ref(false);
@@ -51,6 +64,11 @@ const deleteError = ref<Error | null>(null);
 const handleEditPlace = (id: string) => {
   selectedId.value = id;
   openEditModal();
+};
+
+const handleOpenNotes = (id: string) => {
+  selectedNotesId.value = id;
+  openNotesModal();
 };
 
 const handleSubmit = async (formData: Omit<UpdatePointRequest, 'tripId'>) => {
@@ -119,7 +137,7 @@ const openTripChat = () => {
       <template #item="{ element }">
         <PointCard
           :title="element.title"
-          :description="element.notes"
+          :description="element.description"
           :img="element.img"
           :is-active="element._id === activeId"
           :category="element.category"
@@ -128,6 +146,7 @@ const openTripChat = () => {
           @click="emit('place-clicked', element._id)"
           @edit="handleEditPlace(element._id)"
           @delete="handleOpenConfirmationModal(element._id)"
+          @notes="handleOpenNotes(element._id)"
         />
       </template>
     </Draggable>
@@ -138,6 +157,13 @@ const openTripChat = () => {
       :is-loading="isUpdating"
       @close="closeEditModal"
       @submit="handleSubmit"
+    />
+
+    <PointNotesModal
+      :is-open="isNotesModalOpen"
+      :point="selectedNotesPoint"
+      @close="closeNotesModal"
+      :trip-id="props.tripId"
     />
 
     <ConfirmationModal

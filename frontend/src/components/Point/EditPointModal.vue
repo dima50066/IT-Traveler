@@ -17,7 +17,7 @@ const emit = defineEmits(['close', 'submit']);
 
 const form = ref({
   title: '',
-  notes: '',
+  description: '',
   img: '',
   coordinates: { lat: 0, lng: 0 },
   transportMode: 'walk' as
@@ -49,7 +49,7 @@ watch(
     if (newPlace) {
       form.value = {
         title: newPlace.title,
-        notes: newPlace.notes || '',
+        description: newPlace.description || '',
         img: newPlace.img || '',
         coordinates: {
           lat: newPlace.coordinates?.[0] ?? newPlace.coordinates?.lat ?? 0,
@@ -101,7 +101,7 @@ const handleImageChange = (image: string) => {
 
           <div class="w-7/12">
             <IInput label="Локація" v-model="form.title" class="mb-4" />
-            <IInput label="Нотатки" type="textarea" v-model="form.notes" class="mb-4" />
+            <IInput label="Опис" type="textarea" v-model="form.description" class="mb-4" />
 
             <IInput
               label="День подорожі"

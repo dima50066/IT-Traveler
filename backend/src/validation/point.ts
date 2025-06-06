@@ -5,9 +5,18 @@ const coordinatesSchema = Joi.object({
   lng: Joi.number().required(),
 });
 
+const noteItemSchema = Joi.object({
+  text: Joi.string().required(),
+  createdAt: Joi.date().optional(),
+  authorId: Joi.string().optional(),
+});
+
+const notesSchema = Joi.array().items(noteItemSchema);
+
 export const createPointSchema = Joi.object({
   title: Joi.string().required(),
-  notes: Joi.string().allow("", null),
+  description: Joi.string().allow("").optional(),
+  notes: notesSchema.optional(),
   coordinates: coordinatesSchema.required(),
   dayNumber: Joi.number().integer().min(1).optional(),
   orderIndex: Joi.number().optional(),
@@ -45,7 +54,8 @@ export const createPointSchema = Joi.object({
 
 export const updatePointSchema = Joi.object({
   title: Joi.string(),
-  notes: Joi.string().allow("", null),
+  description: Joi.string().allow("").optional(),
+  notes: notesSchema.optional(),
   coordinates: coordinatesSchema,
   dayNumber: Joi.number().integer().min(1),
   orderIndex: Joi.number(),

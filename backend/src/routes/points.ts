@@ -6,6 +6,9 @@ import {
   deletePoint,
   searchPlaces,
   reorderPoints,
+  addNoteToPoint,
+  getPointNotes,
+  deleteNoteFromPoint,
 } from "../controllers/points";
 import { validateBody } from "../middlewares/validateBody";
 import { createPointSchema, updatePointSchema } from "../validation/point";
@@ -38,5 +41,12 @@ router.delete("/:id", checkTripAccess, ctrlWrapper(deletePoint));
 router.get("/search", ctrlWrapper(searchPlaces));
 
 router.patch("/reorder/:tripId", checkTripAccess, ctrlWrapper(reorderPoints));
+router.patch("/:id/notes", checkTripAccess, ctrlWrapper(addNoteToPoint));
+router.get("/:id/notes", checkTripAccess, ctrlWrapper(getPointNotes));
+router.delete(
+  "/:pointId/notes/:noteIndex",
+  checkTripAccess,
+  ctrlWrapper(deleteNoteFromPoint)
+);
 
 export default router;

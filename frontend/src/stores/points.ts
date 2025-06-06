@@ -5,9 +5,12 @@ import {
   updatePoint,
   deletePoint,
   reorderPoints,
-  getPointsByCategory
+  getPointsByCategory,
+  addNoteToPoint,
+  getPointNotes,
+  deleteNoteFromPoint
 } from '../api/points/points';
-import type { Point, AddPointRequest, UpdatePointRequest } from '../types';
+import type { Point, AddPointRequest, UpdatePointRequest, PointNote } from '../types';
 
 export const usePointsStore = defineStore('points', {
   state: () => ({
@@ -42,9 +45,6 @@ export const usePointsStore = defineStore('points', {
       await deletePoint(id, tripId);
       await this.fetchPoints(tripId);
     },
-    clearPoints() {
-      this.points = [];
-    },
 
     async reorderPoints(tripId: string, newOrder: string[]) {
       try {
@@ -67,8 +67,45 @@ export const usePointsStore = defineStore('points', {
       }
     },
 
+    async addNoteToPoint(pointId: string, text: string, tripId: string) {
+      try {
+        await addNoteToPoint(pointId, text, tripId);
+      } catch (err) {
+        console.error('❌ Failed to add note:', err);
+        throw err;
+      }
+    },
+
+    async fetchPointNotes(pointId: string): Promise<PointNote[]> {
+      try {
+        return await getPointNotes(
+          pointId,
+          this.points.find((p) => p._id === pointId)?.tripId || ''
+        );
+      } catch (err) {
+        console.error('❌ Failed to fetch notes:', err);
+        throw err;
+      }
+    },
+
+    async removeNote(pointId: string, noteIndex: number): Promise<PointNote[]> {
+      try {
+        return await deleteNoteFromPoint(
+          pointId,
+          noteIndex,
+          this.points.find((p) => p._id === pointId)?.tripId || ''
+        );
+      } catch (err) {
+        console.error('❌ Failed to delete note:', err);
+        throw err;
+      }
+    },
     sortPointsByOrder() {
       this.points.sort((a, b) => (a.orderIndex ?? 0) - (b.orderIndex ?? 0));
+    },
+
+    clearPoints() {
+      this.points = [];
     }
   }
 });

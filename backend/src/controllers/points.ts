@@ -10,9 +10,6 @@ import { getDistanceDuration } from "../services/points";
 export const listPoints = async (req: Request, res: Response) => {
   try {
     if (!req.trip) {
-      console.error(
-        "❌ [GET /points/list] req.trip is missing — check middleware"
-      );
       return res
         .status(400)
         .json({ message: "Missing trip context from middleware" });
@@ -34,8 +31,23 @@ export const listPoints = async (req: Request, res: Response) => {
 export const createPoint = async (req: Request, res: Response) => {
   const userId = req.user?.id!;
   const tripId = req.trip!._id.toString();
-  const { title, notes, coordinates, dayNumber, transportMode, category } =
-    req.body;
+  const {
+    title,
+    description,
+    notes = [],
+    coordinates,
+    dayNumber,
+    transportMode,
+    category,
+  } = req.body;
+
+  const notesWithMeta = Array.isArray(notes)
+    ? notes.map((n) => ({
+        text: n.text || "",
+        authorId: userId,
+        createdAt: new Date(),
+      }))
+    : [];
 
   const lastPoint = await Point.findOne({ tripId }).sort({ orderIndex: -1 });
   const orderIndex = (lastPoint?.orderIndex ?? -1) + 1;
@@ -67,13 +79,14 @@ export const createPoint = async (req: Request, res: Response) => {
       distance = routeData.distance;
       duration = routeData.duration;
     } catch (err) {
-      console.warn("❗ Failed to calculate route distance/duration:", err);
+      console.error(err);
     }
   }
 
   const data = {
     title,
-    notes,
+    description,
+    notes: notesWithMeta,
     coordinates,
     dayNumber,
     orderIndex,
@@ -102,6 +115,7 @@ export const updatePoint = async (req: Request, res: Response) => {
   const tripId = req.trip!._id.toString();
   const {
     title,
+    description,
     notes,
     coordinates,
     dayNumber,
@@ -113,7 +127,7 @@ export const updatePoint = async (req: Request, res: Response) => {
 
   const updatedData: any = {
     title,
-    notes,
+    description,
     coordinates,
     dayNumber,
     orderIndex,
@@ -121,6 +135,14 @@ export const updatePoint = async (req: Request, res: Response) => {
     category,
     costFromPrevious,
   };
+
+  if (Array.isArray(notes)) {
+    updatedData.notes = notes.map((n) => ({
+      text: n.text || "",
+      authorId: req.user?.id,
+      createdAt: n.createdAt ? new Date(n.createdAt) : new Date(),
+    }));
+  }
 
   if (req.file) {
     const uploadResult = await saveFileToCloudinary(
@@ -159,12 +181,13 @@ export const updatePoint = async (req: Request, res: Response) => {
         updatedData.distance = distance;
         updatedData.duration = duration;
       } catch (err) {
-        console.warn("❗ Failed to recalculate route:", err);
+        console.error(err);
       }
     }
   }
 
   const updated = await pointService.updatePointById(id, updatedData);
+
   await Promise.all([
     redisClient.del(`points:${tripId}:wishlist`),
     redisClient.del(`points:${tripId}:visited`),
@@ -190,7 +213,7 @@ export const deletePoint = async (req: Request, res: Response) => {
       redisClient.del(`points:${tripId}:all`),
     ]);
   } catch (err) {
-    console.warn(`[Redis] Failed to delete cache for trip ${tripId}`, err);
+    console.error(err);
   }
 
   if (!deleted) {
@@ -211,7 +234,7 @@ export const searchPlaces = async (req: Request, res: Response) => {
     const results = await searchPlacesByText(query);
     res.json(results);
   } catch (err) {
-    console.error("[Places] Search failed:", err);
+    console.error(err);
     res.status(500).json({ message: "Failed to search places." });
   }
 };
@@ -225,10 +248,7 @@ export const reorderPoints = async (req: Request, res: Response) => {
   }
 
   const points = await Point.find({ _id: { $in: orderedPointIds }, tripId });
-
   const pointMap = new Map(points.map((p) => [p._id.toString(), p]));
-
-  const updates: any[] = [];
 
   for (let i = 0; i < orderedPointIds.length; i++) {
     const currentId = orderedPointIds[i];
@@ -239,9 +259,7 @@ export const reorderPoints = async (req: Request, res: Response) => {
 
     if (!point) continue;
 
-    const update: any = {
-      orderIndex: i,
-    };
+    const update: any = { orderIndex: i };
 
     if (
       prevPoint &&
@@ -258,7 +276,7 @@ export const reorderPoints = async (req: Request, res: Response) => {
         update.distance = result.distance;
         update.duration = result.duration;
       } catch (err) {
-        console.warn(`❗ Failed to get route for ${point._id}:`, err);
+        console.error(err);
       }
     }
 
@@ -272,4 +290,82 @@ export const reorderPoints = async (req: Request, res: Response) => {
   ]);
 
   res.json({ message: "Points reordered successfully" });
+};
+
+export const addNoteToPoint = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const { text, tripId: tripIdFromBody } = req.body;
+
+  if (!req.trip && !tripIdFromBody) {
+    return res.status(400).json({ message: "Missing tripId" });
+  }
+
+  if (!text || text.trim().length === 0) {
+    return res.status(400).json({ message: "Note text is required" });
+  }
+
+  const newNote = {
+    text: text.trim(),
+    createdAt: new Date(),
+    authorId: req.user?.id,
+  };
+
+  try {
+    const updated = await Point.findByIdAndUpdate(
+      id,
+      { $push: { notes: newNote } },
+      { new: true }
+    );
+
+    if (!updated) {
+      return res.status(404).json({ message: "Point not found" });
+    }
+
+    res.json({ message: "Note added successfully", point: updated });
+  } catch (err: any) {
+    res
+      .status(500)
+      .json({ message: "Internal server error", error: err.message });
+  }
+};
+
+export const getPointNotes = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const point = await Point.findById(id);
+
+  if (!point) {
+    return res.status(404).json({ message: "Point not found" });
+  }
+
+  res.json(point.notes ?? []);
+};
+
+export const deleteNoteFromPoint = async (req: Request, res: Response) => {
+  const { pointId, noteIndex } = req.params;
+  const point = await Point.findById(pointId);
+
+  if (!point) {
+    return res.status(404).json({ message: "Point not found" });
+  }
+
+  const index = parseInt(noteIndex, 10);
+
+  if (
+    !Array.isArray(point.notes) ||
+    isNaN(index) ||
+    index < 0 ||
+    index >= point.notes.length
+  ) {
+    return res.status(400).json({ message: "Invalid note index" });
+  }
+
+  point.notes.splice(index, 1);
+  await point.save();
+
+  res.json({ message: "Note deleted", notes: point.notes });
+
+  point.notes.splice(Number(noteIndex), 1);
+  await point.save();
+
+  res.json({ message: "Note deleted", notes: point.notes });
 };

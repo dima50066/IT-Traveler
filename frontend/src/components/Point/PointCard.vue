@@ -13,7 +13,7 @@ defineProps({
   dayNumber: Number
 });
 
-const emit = defineEmits(['edit', 'delete']);
+const emit = defineEmits(['edit', 'delete', 'notes']);
 </script>
 
 <template>
@@ -58,6 +58,7 @@ const emit = defineEmits(['edit', 'delete']);
             <PointCardIconButton @click.stop="emit('delete')">
               <DeleteIcon />
             </PointCardIconButton>
+            <PointCardIconButton @click.stop="emit('notes')"> 📝 </PointCardIconButton>
           </div>
         </div>
         <p class="text-xs line-clamp-3">{{ description }}</p>

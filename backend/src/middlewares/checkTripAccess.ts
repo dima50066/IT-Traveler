@@ -14,15 +14,10 @@ export const checkTripAccess = async (
       return next(new Error("Missing user ID in request"));
     }
 
-    let rawTripId: string | undefined;
-
-    if (typeof req.query?.tripId === "string") {
-      rawTripId = req.query.tripId;
-    } else if (typeof req.body?.tripId === "string") {
-      rawTripId = req.body.tripId;
-    } else if (typeof req.params?.tripId === "string") {
-      rawTripId = req.params.tripId;
-    }
+    const rawTripId =
+      req.query?.tripId?.toString() ||
+      req.body?.tripId?.toString() ||
+      req.params?.tripId?.toString();
 
     if (!rawTripId) {
       return next(new Error("Missing tripId"));

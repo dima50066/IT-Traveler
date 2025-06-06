@@ -18,10 +18,18 @@ const pointSchema = new Schema(
       required: true,
       trim: true,
     },
-    notes: {
+    description: {
       type: String,
       trim: true,
     },
+    notes: [
+      {
+        text: { type: String, required: true },
+        createdAt: { type: Date, default: Date.now },
+        authorId: { type: String },
+      },
+    ],
+
     coordinates: {
       type: {
         lat: { type: Number, required: true },

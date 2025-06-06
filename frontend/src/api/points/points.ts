@@ -1,5 +1,11 @@
 import { clientFetch } from '../clientFetch';
-import { GetAllPointsResponse, AddPointRequest, UpdatePointRequest, Point } from '../../types';
+import {
+  GetAllPointsResponse,
+  AddPointRequest,
+  UpdatePointRequest,
+  Point,
+  PointNote
+} from '../../types';
 
 const BASE_PLACES_URL = '/points';
 
@@ -23,7 +29,7 @@ export const addPoints = (body: AddPointRequest): Promise<Point> => {
   formData.append('coordinates[lng]', String(body.coordinates?.lng ?? 0));
   formData.append('tripId', body.tripId);
 
-  if (body.notes) formData.append('notes', body.notes);
+  if (body.description) formData.append('description', body.description);
   if (body.dayNumber != null) formData.append('dayNumber', String(body.dayNumber));
   if (body.orderIndex != null) formData.append('orderIndex', String(body.orderIndex));
   if (body.transportMode) formData.append('transportMode', body.transportMode);
@@ -42,7 +48,7 @@ export const updatePoint = (body: UpdatePointRequest): Promise<Point> => {
   formData.append('coordinates[lng]', String(body.coordinates?.lng ?? 0));
   formData.append('tripId', body.tripId);
 
-  if (body.notes) formData.append('notes', body.notes);
+  if (body.description) formData.append('description', body.description);
   if (body.dayNumber != null) formData.append('dayNumber', String(body.dayNumber));
   if (body.orderIndex != null) formData.append('orderIndex', String(body.orderIndex));
   if (body.transportMode) formData.append('transportMode', body.transportMode);
@@ -79,4 +85,30 @@ export const getPointsByCategory = (tripId: string, category: string): Promise<P
   return clientFetch
     .get(`/trips/${tripId}/points`, { params: { category } })
     .then((res) => res.data);
+};
+
+export const addNoteToPoint = (
+  pointId: string,
+  text: string,
+  tripId: string
+): Promise<PointNote> => {
+  return clientFetch
+    .patch(`${BASE_PLACES_URL}/${pointId}/notes?tripId=${tripId}`, { text })
+    .then((res) => res.data);
+};
+
+export const getPointNotes = (pointId: string, tripId: string): Promise<PointNote[]> => {
+  return clientFetch
+    .get(`/points/${pointId}/notes`, { params: { tripId } })
+    .then((res) => res.data);
+};
+
+export const deleteNoteFromPoint = (
+  pointId: string,
+  noteIndex: number,
+  tripId: string
+): Promise<PointNote[]> => {
+  return clientFetch
+    .delete(`/points/${pointId}/notes/${noteIndex}`, { params: { tripId } })
+    .then((res) => res.data.notes);
 };
