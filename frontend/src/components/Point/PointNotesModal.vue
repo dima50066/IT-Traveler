@@ -56,26 +56,27 @@ const deleteNote = async (index: number) => {
   }
 };
 </script>
-
 <template>
   <IModal :is-open="isOpen" @close="emit('close')">
-    <div class="min-w-[500px] max-w-[600px]">
-      <h2 class="text-xl font-semibold mb-4">Нотатки до точки</h2>
+    <div class="w-full max-w-[600px] p-4 sm:p-6 bg-white rounded-md max-h-screen overflow-y-auto">
+      <h2 class="text-lg sm:text-xl font-semibold mb-4">Нотатки до точки</h2>
 
       <div v-if="isLoading" class="text-gray-500 mb-4">Завантаження нотаток...</div>
 
       <div v-else-if="localNotes.length">
-        <ul class="mb-4 max-h-[300px] overflow-auto pr-2">
+        <ul class="mb-4 max-h-[300px] overflow-y-auto pr-2">
           <li
             v-for="(note, index) in localNotes"
             :key="index"
             class="mb-2 border-b pb-2 text-sm flex justify-between items-start gap-2"
           >
             <div class="flex-1">
-              <div class="text-gray-600">
+              <div class="text-gray-600 text-xs sm:text-sm">
                 {{ new Date(note.createdAt).toLocaleString() }}
               </div>
-              <div class="text-black">{{ note.text }}</div>
+              <div class="text-black text-sm break-words">
+                {{ note.text }}
+              </div>
             </div>
             <button
               @click="deleteNote(index)"
@@ -87,6 +88,7 @@ const deleteNote = async (index: number) => {
           </li>
         </ul>
       </div>
+
       <div v-else class="text-gray-400 mb-4">Ще немає нотаток</div>
 
       <form @submit.prevent="submitNote">

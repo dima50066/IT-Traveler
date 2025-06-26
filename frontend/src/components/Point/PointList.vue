@@ -122,10 +122,9 @@ const openTripChat = () => {
   }
 };
 </script>
-
 <template>
-  <div class="px-6 text-black">
-    <div class="text-[#939393] mb-4">Додані маркери</div>
+  <div class="px-3 sm:px-6 text-sm sm:text-base text-black pb-24 sm:pb-10">
+    <div class="text-[#939393] mb-3 sm:mb-4">Додані маркери</div>
 
     <Draggable
       v-model="points"
@@ -179,17 +178,22 @@ const openTripChat = () => {
       <CollaboratorInviteModal :trip-id="props.tripId" @close="emit('close-invite')" />
     </IModal>
 
-    <IButton class="w-full mt-10" variant="gradient" @click="emit('create')">
+    <IButton class="w-full mt-8 sm:mt-10" variant="gradient" @click="emit('create')">
       Додати маркер
     </IButton>
+
     <button
       v-if="tripsStore.activeTrip?.chatId"
       @click="openTripChat"
-      class="mt-4 w-full bg-blue-500 text-white p-2 rounded"
+      class="mt-3 sm:mt-4 w-full bg-blue-500 text-white p-2 rounded text-sm sm:text-base"
     >
       💬 Відкрити чат тріпа
     </button>
-    <IButton @click="emit('open-invite')" class="mt-4 w-full bg-green-500 text-white p-2 rounded">
+
+    <IButton
+      @click="emit('open-invite')"
+      class="mt-3 sm:mt-4 w-full bg-green-500 text-white p-2 rounded text-sm sm:text-base"
+    >
       👥 Додати колаборатора
     </IButton>
   </div>

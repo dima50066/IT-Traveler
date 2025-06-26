@@ -60,53 +60,72 @@ const handleUpload = (file: File) => {
 
 <template>
   <IModal :is-open="isOpen" @close="emit('close')">
-    <form @submit.prevent="emit('submit', formData, resetForm)" class="min-w-[420px]">
-      <div class="flex gap-1 justify-center font-bold text-center mb-10">
-        <MarkerIcon /> Додати маркер
+    <form
+      @submit.prevent="emit('submit', formData, resetForm)"
+      class="w-[90vw] sm:min-w-[320px] max-w-md md:max-w-lg bg-white sm:p-6 rounded-lg flex flex-col gap-4 text-sm"
+    >
+      <div class="flex items-center justify-center gap-1 font-semibold text-base sm:text-lg">
+        <MarkerIcon class="h-5 w-5" /> Додати маркер
       </div>
 
-      <IInput label="Локація" class="mb-4" v-model="formData.title" />
-      <IInput label="Опис" type="textarea" class="mb-4" v-model="formData.description" />
+      <div class="flex flex-col gap-3 lg:grid lg:grid-cols-2 lg:gap-4">
+        <IInput label="Локація" v-model="formData.title" />
 
-      <IInput label="День подорожі" class="mb-4" type="number" v-model="formData.dayNumber" />
+        <IInput
+          label="День подорожі"
+          type="number"
+          v-model="formData.dayNumber"
+          class="lg:col-start-2"
+        />
 
-      <label class="block text-sm font-medium mb-1">Тип транспорту до цього місьця</label>
-      <select v-model="formData.transportMode" class="w-full border rounded p-2 mb-4">
-        <option value="car">Автомобіль</option>
-        <option value="walk">Пішки</option>
-        <option value="public">Громадський</option>
-        <option value="plane">Літак</option>
-        <option value="train">Поїзд</option>
-        <option value="bike">Велосипед</option>
-        <option value="boat">Човен</option>
-        <option value="taxi">Таксі</option>
-        <option value="shuttle">Шатл</option>
-      </select>
+        <IInput label="Опис" type="textarea" v-model="formData.description" class="lg:col-span-2" />
 
-      <label class="block text-sm font-medium mb-1">Категорія</label>
-      <select v-model="formData.category" class="w-full border rounded p-2 mb-4">
-        <option value="accommodation">Житло</option>
-        <option value="airport">Аеропорт</option>
-        <option value="restaurant">Ресторан</option>
-        <option value="museum">Музей</option>
-        <option value="nature">Природа</option>
-        <option value="shopping">Шопінг</option>
-        <option value="station">Станція</option>
-        <option value="other">Інше</option>
-      </select>
+        <div>
+          <label class="block text-xs font-medium mb-1">Тип транспорту</label>
+          <select v-model="formData.transportMode" class="w-full border rounded px-2 py-1">
+            <option value="car">Автомобіль</option>
+            <option value="walk">Пішки</option>
+            <option value="public">Громадський</option>
+            <option value="plane">Літак</option>
+            <option value="train">Поїзд</option>
+            <option value="bike">Велосипед</option>
+            <option value="boat">Човен</option>
+            <option value="taxi">Таксі</option>
+            <option value="shuttle">Шатл</option>
+          </select>
+        </div>
 
-      <IInput
-        label="Бюджет до цієї точки (грн)"
-        class="mb-4"
-        type="number"
-        v-model="formData.costFromPrevious"
-      />
+        <div>
+          <label class="block text-xs font-medium mb-1">Категорія</label>
+          <select v-model="formData.category" class="w-full border rounded px-2 py-1">
+            <option value="accommodation">Житло</option>
+            <option value="airport">Аеропорт</option>
+            <option value="restaurant">Ресторан</option>
+            <option value="museum">Музей</option>
+            <option value="nature">Природа</option>
+            <option value="shopping">Шопінг</option>
+            <option value="station">Станція</option>
+            <option value="other">Інше</option>
+          </select>
+        </div>
 
-      <InputImage @uploaded="handleUpload">Натисніть тут, щоб додати фото</InputImage>
+        <IInput
+          label="Бюджет (грн)"
+          type="number"
+          v-model="formData.costFromPrevious"
+          class="lg:col-span-2"
+        />
 
-      <IButton class="w-full mt-4" variant="gradient" :is-loading="isLoading"> Додати </IButton>
+        <InputImage @uploaded="handleUpload" class="lg:col-span-2">
+          Натисніть, щоб додати фото
+        </InputImage>
+      </div>
 
-      <div v-if="hasError" class="text-red-500 mt-2">Щось пішло не так</div>
+      <IButton class="w-full text-sm" variant="gradient" :is-loading="isLoading"> Додати </IButton>
+
+      <p v-if="hasError" class="text-red-500 text-xs text-center">
+        Щось пішло не так. Спробуйте ще раз.
+      </p>
     </form>
   </IModal>
 </template>

@@ -80,26 +80,27 @@ const handleImageChange = (image: string) => {
   form.value.img = image;
 };
 </script>
-
 <template>
   <IModal :is-open="isOpen" @close="emit('close')">
-    <div class="w-[750px]">
-      <div class="flex gap-2 items-center mb-10">
+    <div
+      class="w-full max-w-[750px] p-4 sm:p-6 md:p-8 bg-white rounded-md max-h-screen overflow-y-auto"
+    >
+      <div class="flex gap-2 items-center mb-6">
         <MarkerIcon height="18" width="18" />
         <span class="font-bold text-base">Редагувати маркер</span>
       </div>
 
       <form @submit.prevent="handleSubmit">
-        <div class="flex gap-5">
-          <div class="w-5/12">
+        <div class="flex flex-col md:flex-row gap-5">
+          <div class="w-full md:w-5/12">
             <img
-              class="w-full h-[276px] object-cover rounded-md"
+              class="w-full h-[200px] md:h-[276px] object-cover rounded-md"
               :src="form.img || fallbackImage"
               alt="place img"
             />
           </div>
 
-          <div class="w-7/12">
+          <div class="w-full md:w-7/12">
             <IInput label="Локація" v-model="form.title" class="mb-4" />
             <IInput label="Опис" type="textarea" v-model="form.description" class="mb-4" />
 

@@ -97,12 +97,16 @@ const openChat = (tripId: string) => {
 </script>
 
 <template>
-  <div class="relative bg-white h-full w-[400px] shrink-0 overflow-auto pb-10 shadow-lg">
-    <div class="p-4 space-y-8">
+  <div
+    class="bg-white h-full w-full sm:w-[400px] max-w-full shrink-0 overflow-auto pb-10 shadow-lg"
+  >
+    <div class="p-3 pt-20 sm:pt-3 sm:p-4 space-y-6 sm:space-y-8 text-sm sm:text-base">
       <template v-if="activeTrip">
         <div class="flex justify-between items-center mb-2">
-          <h2 class="text-xl font-bold">{{ activeTrip.title }}</h2>
-          <button @click="clearActiveTrip" class="text-red-500 text-sm hover:underline">
+          <h2 class="text-lg sm:text-xl font-bold truncate">
+            {{ activeTrip.title }}
+          </h2>
+          <button @click="clearActiveTrip" class="text-red-500 text-xs sm:text-sm hover:underline">
             ← Назад
           </button>
         </div>

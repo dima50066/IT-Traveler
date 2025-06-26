@@ -68,17 +68,40 @@ onBeforeUnmount(() => {
   socket.disconnect();
 });
 </script>
-
 <template>
-  <div class="chat-container p-4 border rounded shadow-md h-full flex flex-col">
+  <div
+    class="chat-container flex flex-col h-dvh md:h-full p-4 bg-white md:bg-transparent border-none md:border-l md:border-gray-200 shadow-none md:shadow-md"
+  >
     <div class="flex justify-end mb-2">
-      <button @click="handleClose" class="text-red-500 hover:underline text-sm">Закрити</button>
+      <button
+        @click="handleClose"
+        class="text-red-500 hover:underline text-lg md:text-sm md:p-0 p-2 -mr-2 md:-mr-0"
+        aria-label="Закрити чат"
+      >
+        <span class="hidden md:inline">Закрити</span>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          class="w-6 h-6 md:hidden"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <line x1="18" y1="6" x2="6" y2="18" />
+          <line x1="6" y1="6" x2="18" y2="18" />
+        </svg>
+      </button>
     </div>
-    <div class="messages flex-1 overflow-auto mb-4">
-      <div v-for="msg in chatStore.messages" :key="msg.messageId" class="mb-2 break-words">
-        <strong>{{ msg.senderName || msg.senderId }}:</strong>
-        {{ msg.message }}
-        <div class="text-xs text-gray-400">
+
+    <div class="flex-1 overflow-auto mb-4 space-y-3">
+      <div v-for="msg in chatStore.messages" :key="msg.messageId" class="break-words">
+        <div class="text-[13px] md:text-sm">
+          <strong>{{ msg.senderName || msg.senderId }}:</strong>
+          {{ msg.message }}
+        </div>
+        <div class="text-[11px] md:text-xs text-gray-400">
           {{ msg.timestamp ? new Date(msg.timestamp).toLocaleTimeString() : 'Invalid Date' }}
         </div>
       </div>
@@ -88,9 +111,14 @@ onBeforeUnmount(() => {
       <input
         v-model="newMessage"
         placeholder="Type a message..."
-        class="flex-1 border px-2 py-1 rounded text-sm"
+        class="flex-1 border px-3 py-2 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
       />
-      <button type="submit" class="px-4 py-1 bg-blue-500 text-white rounded text-sm">Send</button>
+      <button
+        type="submit"
+        class="px-4 py-2 bg-blue-500 text-white rounded text-sm active:scale-95 transition-transform"
+      >
+        Send
+      </button>
     </form>
   </div>
 </template>
