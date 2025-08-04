@@ -12,6 +12,8 @@ const tripsStore = useTripsStore();
 const isOpen = ref(false);
 const hasNotifications = ref(false);
 const isNotificationPanelOpen = ref(false);
+const fallbackAvatar =
+  'https://res.cloudinary.com/divyszzpf/image/upload/v1754304127/e2ft3t0ptrwg6rco1rsm_rwgw4q.png';
 
 const logout = () => {
   authStore.clear();
@@ -35,10 +37,11 @@ const toggleNotificationPanel = () => {
   <div class="absolute top-5 right-5 z-50" @mouseenter="isOpen = true" @mouseleave="isOpen = false">
     <div class="flex items-center gap-3 bg-white px-4 py-2 rounded-full shadow cursor-pointer">
       <img
-        :src="authStore.user?.picture"
+        :src="authStore.user?.picture || fallbackAvatar"
         alt="Avatar"
         class="w-10 h-10 rounded-full object-cover"
       />
+
       <div class="text-left hidden sm:block">
         <p class="text-sm font-semibold text-gray-800">
           {{ authStore.user?.name }}
