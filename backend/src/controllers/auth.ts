@@ -7,7 +7,8 @@ import { getUserById, getAllUsers, findOrCreateUser } from "../services/auth";
 
 const CLIENT_ID = env("GOOGLE_CLIENT_ID");
 const CLIENT_SECRET = env("GOOGLE_CLIENT_SECRET");
-const REDIRECT_URI = "http://localhost:3000/auth/callback";
+const REDIRECT_URI = env("GOOGLE_REDIRECT_URI");
+const FRONTEND_REDIRECT_URI = env("FRONTEND_REDIRECT_URI");
 const JWT_SECRET = env("JWT_SECRET");
 
 export const googleAuthRedirect = async (req: Request, res: Response) => {
@@ -137,7 +138,7 @@ export const googleAuthCallback = async (req: Request, res: Response) => {
       { expiresIn: "7d" }
     );
 
-    res.redirect(`http://localhost:5173/auth?token=${jwtToken}`);
+    res.redirect(`${FRONTEND_REDIRECT_URI}?token=${jwtToken}`);
   } catch (err: any) {
     res.status(500).json({ message: "Google authentication failed" });
   }
