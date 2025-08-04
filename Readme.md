@@ -1,5 +1,3 @@
----
-
 # IT-Traveler
 
 > Transform Travel Planning into Seamless Adventure
